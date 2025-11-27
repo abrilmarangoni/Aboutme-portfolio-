@@ -631,6 +631,20 @@ export function PromptingIsAllYouNeed() {
         aria-label="Hire Me: Interactive Breakout game - Use arrow keys to control the paddle"
       />
       {gameState === "idle" && (
+        <div className="absolute top-0 left-0 right-0 z-10 pt-24 pb-8 px-8 bg-transparent pointer-events-none">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center space-x-4">
+              <div className="w-8 h-px bg-stone-400"></div>
+              <h2 className="text-sm font-light tracking-wider uppercase text-stone-400">
+                Is your company the best?
+                <br />
+                Play the game and prove it.
+              </h2>
+            </div>
+          </div>
+        </div>
+      )}
+      {gameState === "idle" && (
         <div className="absolute inset-0 flex items-center justify-center bg-black">
           <div className="border border-stone-800 bg-black/90 p-8 max-w-md w-full mx-4">
             <div className="space-y-6">
