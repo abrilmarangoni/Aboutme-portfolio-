@@ -5,76 +5,18 @@ import Link from "next/link"
 import { ArrowLeft, Globe, Sun, Moon, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-interface Particle {
-  id: number
-  x: number
-  y: number
-  opacity: number
-  size: number
-  vx: number
-  vy: number
-  life: number
-}
-
 export default function AbaAiProject() {
   const [language, setLanguage] = useState<"en" | "es">("en")
   const [darkMode, setDarkMode] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [particles, setParticles] = useState<Particle[]>([])
   const [horizontalTitle, setHorizontalTitle] = useState("Our Mission")
-  const particleIdRef = useRef(0)
+  const [horizontalTitle2, setHorizontalTitle2] = useState("TECH STACK")
   const horizontalSectionRef = useRef<HTMLElement>(null)
   const horizontalTrackRef = useRef<HTMLDivElement>(null)
+  const horizontalSection2Ref = useRef<HTMLElement>(null)
+  const horizontalTrack2Ref = useRef<HTMLDivElement>(null)
   const flowLineRef = useRef<HTMLDivElement>(null)
   const flowNodeRef = useRef<HTMLDivElement>(null)
   const flowContainerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-      
-      // Crear nuevas partículas en la posición del cursor
-      const newParticles: Particle[] = []
-      for (let i = 0; i < 5; i++) {
-        particleIdRef.current += 1
-        newParticles.push({
-          id: particleIdRef.current,
-          x: e.clientX + (Math.random() - 0.5) * 30,
-          y: e.clientY + (Math.random() - 0.5) * 30,
-          opacity: 0.7 + Math.random() * 0.3,
-          size: 4 + Math.random() * 6,
-          vx: (Math.random() - 0.5) * 3,
-          vy: (Math.random() - 0.5) * 3,
-          life: 0.8 + Math.random() * 0.4
-        })
-      }
-      
-      setParticles(prev => [...prev, ...newParticles])
-    }
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
-
-  // Animar partículas
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setParticles(prev => {
-        return prev
-          .map(p => ({
-            ...p,
-            x: p.x + p.vx,
-            y: p.y + p.vy,
-            life: p.life - 0.015,
-            opacity: Math.max(0, p.life * p.opacity),
-            vx: p.vx * 0.96,
-            vy: p.vy * 0.96
-          }))
-          .filter(p => p.life > 0.05 && p.opacity > 0.05) // Mantener algunas partículas visibles
-      })
-    }, 16) // ~60fps
-    
-    return () => clearInterval(interval)
-  }, [])
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem("darkMode") === "true"
@@ -146,6 +88,64 @@ export default function AbaAiProject() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  // Horizontal scroll effect for Tech Stack + Conversation Flow (scrolls in opposite direction)
+  useEffect(() => {
+    const handleScroll2 = () => {
+      if (!horizontalSection2Ref.current || !horizontalTrack2Ref.current) return
+
+      const section = horizontalSection2Ref.current
+      const track = horizontalTrack2Ref.current
+      const sectionTop = section.offsetTop
+      const sectionHeight = section.offsetHeight
+      const windowHeight = window.innerHeight
+      const scrollY = window.scrollY
+
+      const scrollDelay = windowHeight * 0.2
+      const startScroll = sectionTop + scrollDelay
+      const endScroll = sectionTop + sectionHeight - windowHeight
+
+      if (scrollY >= startScroll && scrollY <= endScroll) {
+        // Calculate scroll progress (0 to 1)
+        const progress = (scrollY - startScroll) / (endScroll - startScroll)
+        const clampedProgress = Math.max(0, Math.min(1, progress))
+
+        // Update title based on scroll progress (2 slides)
+        if (clampedProgress < 0.5) {
+          setHorizontalTitle2("TECH STACK")
+        } else {
+          setHorizontalTitle2("ARCHITECTURE FLOW")
+        }
+
+        // Calculate translate - OPPOSITE DIRECTION (positive instead of negative)
+        // Starts showing second slide, scrolls to first
+        const viewportWidth = window.innerWidth
+        const totalSlides = 2
+        const maxTranslate = (totalSlides - 1) * viewportWidth
+        const translateX = -viewportWidth + (clampedProgress * maxTranslate)
+
+        // Apply smooth transform
+        requestAnimationFrame(() => {
+          track.style.transform = `translateX(${translateX}px)`
+        })
+      } else if (scrollY < startScroll) {
+        setHorizontalTitle2("TECH STACK")
+        requestAnimationFrame(() => {
+          track.style.transform = `translateX(-100vw)`
+        })
+      } else {
+        setHorizontalTitle2("CONVERSATION FLOW")
+        requestAnimationFrame(() => {
+          track.style.transform = `translateX(0px)`
+        })
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll2, { passive: true })
+    handleScroll2() // Initial check
+
+    return () => window.removeEventListener("scroll", handleScroll2)
+  }, [])
+
   // Animate flow node
   useEffect(() => {
     if (!flowNodeRef.current || !flowContainerRef.current) return
@@ -209,17 +209,17 @@ export default function AbaAiProject() {
         const newTop = currentPos + (nextPos - currentPos) * easeProgress
         node.style.top = `${newTop}px`
 
-        // Check proximity to each number and change color
+        // Check proximity to each number and change color to orange
         numberCircles.forEach((circle, index) => {
           const distance = Math.abs(newTop - stepPositions[index])
           const circleElement = circle as HTMLElement
           const textElement = stepTexts[index] as HTMLElement
           
-          if (distance < 50) {
+          if (distance < 40) {
             // Node is close to this number - make it orange with glow effect
             circleElement.style.color = '#D94A00'
             circleElement.style.borderColor = '#D94A00'
-            circleElement.style.boxShadow = '0 0 15px rgba(217, 74, 0, 0.5)'
+            circleElement.style.boxShadow = '0 0 12px rgba(217, 74, 0, 0.6)'
             // Also change text color to orange
             if (textElement) {
               textElement.style.color = '#D94A00'
@@ -318,24 +318,6 @@ export default function AbaAiProject() {
 
   return (
     <div className="min-h-screen bg-black text-white relative">
-      {/* Pixel Trail Effect - White Squares */}
-      <div className="fixed inset-0 pointer-events-none z-50">
-        {particles.map((particle) => (
-          <div
-            key={particle.id}
-            className="absolute"
-            style={{
-              left: particle.x - particle.size / 2,
-              top: particle.y - particle.size / 2,
-              width: particle.size,
-              height: particle.size,
-              backgroundColor: '#ffffff',
-              opacity: particle.opacity,
-            }}
-          />
-        ))}
-      </div>
-
       {/* Vertical Lines - Left and Right - Aligned 5px before "A" of ABOUT */}
       <div 
         className="fixed top-0 bottom-0 w-px bg-white/40 z-40" 
@@ -388,18 +370,13 @@ export default function AbaAiProject() {
 
       {/* Main Content */}
       <main className="relative z-10">
-        {/* BLOCK 1 — Hero with Large Title */}
+        {/* BLOCK 1 — Hero */}
         <section className="relative w-full min-h-screen flex items-center justify-center px-8 md:px-16">
           <div className="max-w-7xl mx-auto text-center pt-32">
-            {/* Large Title */}
-            <h1 className="text-[12rem] md:text-[16rem] font-light tracking-tight uppercase leading-none mb-16">
-              ABA AI
-            </h1>
-            
             {/* Content */}
             <div className="max-w-4xl mx-auto">
             <div className="space-y-8">
-                <h2 className="text-4xl md:text-5xl font-light">FULL STACK AI PROJECT</h2>
+                <h2 className="text-4xl md:text-5xl font-light">ABA IA</h2>
                 <p className="text-xl font-light leading-relaxed">
                   It's a SaaS conversational AI assistant platform that connects WhatsApp, Instagram, and Facebook through Meta Business API. It allows businesses to automate 24/7 customer service using OpenAI GPT-5.1, with a dashboard to manage products, services, and conversations from a single place.
                 </p>
@@ -413,6 +390,11 @@ export default function AbaAiProject() {
                   <ExternalLink className="h-3 w-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
                   <span className="absolute -bottom-1 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300"></span>
                 </a>
+                <div className="pt-8 space-y-2">
+                  <p className="text-sm font-light text-white/60">Full-Stack SaaS Platform</p>
+                  <p className="text-sm font-light text-white/60">built and design by abi marangoni</p>
+                  <p className="text-sm font-light text-white/60">2025</p>
+              </div>
             </div>
           </div>
         </div>
@@ -504,66 +486,137 @@ export default function AbaAiProject() {
         {/* Horizontal Divider */}
         <div className="w-full h-px bg-white/20 my-32"></div>
 
-        {/* BLOCK 5 — Tech Stack */}
-        <section className="px-8 md:px-16 py-32 max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-16">
-            TECH STACK
+        {/* BLOCK 5 & 6 — Horizontal Scroll Section (Tech Stack + Conversation Flow) - Scrolls opposite direction */}
+        <section
+          ref={horizontalSection2Ref}
+          className="relative"
+          style={{ height: "300vh" }}
+        >
+          <div className="sticky top-0 h-screen overflow-hidden">
+            <div className="h-full flex items-center">
+              <div
+                ref={horizontalTrack2Ref}
+                className="flex transition-transform duration-100 ease-out"
+                style={{ willChange: "transform", transform: "translateX(-100vw)" }}
+              >
+                {/* Slide 1 — Architecture Flow (starts hidden on right) */}
+                <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
+                  <div className="max-w-4xl w-full">
+                    <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
+                      ARCHITECTURE FLOW
                     </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl">
-            {/* Frontend */}
-            <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300 hover:bg-white/5 group">
-              <h3 className="text-xl font-light tracking-wider uppercase mb-6">Frontend</h3>
-              <ul className="space-y-3 text-sm font-light leading-relaxed text-white/80">
-                <li>React 18.2.0 + TypeScript 5.1.3</li>
-                <li>Vite 5.0.8 — Build tool y dev server</li>
-                <li>Tailwind CSS 3.4.18 — Estilos utility-first</li>
-                <li>Framer Motion 12.23.24 — Animaciones</li>
-                <li>GSAP 3.13.0 — Animaciones avanzadas</li>
-                <li>React Router DOM 7.9.3 — Navegación</li>
-                <li>Zustand 5.0.8 — Estado global</li>
-                <li>TanStack React Query 5.90.10 — Estado del servidor y caché</li>
-                <li>React Hook Form 7.66.1 + Zod 4.1.12 — Formularios y validación</li>
-                <li>Three.js + React Three Fiber — Elementos 3D</li>
-                <li>Axios 1.13.2 — Cliente HTTP</li>
-              </ul>
+                    <div ref={flowContainerRef} className="relative">
+                      {/* Vertical line - white */}
+                      <div 
+                        ref={flowLineRef}
+                        className="absolute top-5 bottom-5 w-0.5 z-20"
+                        style={{ 
+                          left: '21px',
+                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 100%)',
+                        }}
+                      ></div>
+                      
+                      {/* Animated node - orange */}
+                      <div
+                        ref={flowNodeRef}
+                        className="absolute w-3 h-3 rounded-full z-20"
+                        style={{ 
+                          left: '21px',
+                          transform: 'translate(-50%, -50%)',
+                          backgroundColor: '#D94A00',
+                          boxShadow: '0 0 15px rgba(217,74,0,0.9), 0 0 30px rgba(217,74,0,0.5)',
+                          top: '21px'
+                        }}
+                      ></div>
+                      
+                      <div className="space-y-7 relative">
+                        <div data-step="1" className="flex items-center gap-5 relative">
+                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">1</div>
+                          <p className="text-sm font-light text-white/90">{t.step1}</p>
+                    </div>
+                        <div data-step="2" className="flex items-center gap-5 relative">
+                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">2</div>
+                          <p className="text-sm font-light text-white/90">{t.step2}</p>
+                        </div>
+                        <div data-step="3" className="flex items-center gap-5 relative">
+                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">3</div>
+                          <p className="text-sm font-light text-white/90">{t.step3}</p>
+                      </div>
+                        <div data-step="4" className="flex items-center gap-5 relative">
+                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">4</div>
+                          <p className="text-sm font-light text-white/90">{t.step4}</p>
+                        </div>
+                        <div data-step="5" className="flex items-center gap-5 relative">
+                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">5</div>
+                          <p className="text-sm font-light text-white/90">{t.step5}</p>
+                      </div>
+                        <div data-step="6" className="flex items-center gap-5 relative">
+                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">6</div>
+                          <p className="text-sm font-light text-white/90">{t.step6}</p>
+                        </div>
+                        <div data-step="7" className="flex items-center gap-5 relative">
+                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">7</div>
+                          <p className="text-sm font-light text-white/90">{t.step7}</p>
+                      </div>
+                        <div data-step="8" className="flex items-center gap-5 relative">
+                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">8</div>
+                          <p className="text-sm font-light text-white/90">{t.step8}</p>
+                    </div>
+                    </div>
+                        </div>
+                      </div>
+                        </div>
+
+                {/* Slide 2 — Tech Stack (visible first) */}
+                <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
+                  <div className="max-w-4xl w-full">
+                    <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
+                      TECH STACK
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
+                        <h3 className="text-lg font-light tracking-wider uppercase mb-4">Frontend</h3>
+                        <ul className="space-y-2 text-sm font-light text-white/80">
+                          <li>React 18 + TypeScript</li>
+                          <li>Vite — Build tool</li>
+                          <li>Tailwind CSS</li>
+                          <li>Framer Motion + GSAP</li>
+                          <li>React Router DOM</li>
+                          <li>Zustand + TanStack Query</li>
+                        </ul>
+                  </div>
+                      <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
+                        <h3 className="text-lg font-light tracking-wider uppercase mb-4">Backend</h3>
+                        <ul className="space-y-2 text-sm font-light text-white/80">
+                          <li>NestJS + TypeScript</li>
+                          <li>Prisma + PostgreSQL</li>
+                          <li>Passport + JWT</li>
+                          <li>Helmet + Throttler</li>
+                          <li>Winston Logger</li>
+                        </ul>
                 </div>
-
-            {/* Backend */}
-            <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300 hover:bg-white/5 group">
-              <h3 className="text-xl font-light tracking-wider uppercase mb-6">Backend</h3>
-              <ul className="space-y-3 text-sm font-light leading-relaxed text-white/80">
-                <li>NestJS 10.0.0 — Framework Node.js</li>
-                <li>TypeScript 5.1.3 — Tipado estático</li>
-                <li>Prisma 6.16.3 — ORM y gestión de base de datos</li>
-                <li>PostgreSQL — Base de datos relacional</li>
-                <li>Passport + JWT — Autenticación y autorización</li>
-                <li>bcrypt — Hashing de contraseñas</li>
-                <li>Helmet + Throttler — Seguridad y rate limiting</li>
-                <li>Winston — Logging estructurado</li>
-                <li>class-validator + class-transformer — Validación y transformación</li>
-              </ul>
+                      <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
+                        <h3 className="text-lg font-light tracking-wider uppercase mb-4">AI & Integrations</h3>
+                        <ul className="space-y-2 text-sm font-light text-white/80">
+                          <li>OpenAI GPT-5.1</li>
+                          <li>Meta Business API</li>
+                          <li>Stripe API</li>
+                          <li>Calendly API</li>
+                        </ul>
+                      </div>
+                      <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
+                        <h3 className="text-lg font-light tracking-wider uppercase mb-4">DevOps</h3>
+                        <ul className="space-y-2 text-sm font-light text-white/80">
+                          <li>Vercel — Frontend</li>
+                          <li>Railway — Backend</li>
+                          <li>Prisma Studio</li>
+                          <li>ESLint + Prettier</li>
+                        </ul>
+                    </div>
+                      </div>
+                    </div>
                   </div>
-
-            {/* AI & Integrations */}
-            <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300 hover:bg-white/5 group">
-              <h3 className="text-xl font-light tracking-wider uppercase mb-6">AI & Integrations</h3>
-              <ul className="space-y-3 text-sm font-light leading-relaxed text-white/80">
-                <li>OpenAI GPT-5.1 — Motor de IA conversacional</li>
-                <li>Meta Business API — Integración WhatsApp/Instagram/Facebook</li>
-                <li>Stripe API — Pagos y suscripciones</li>
-                <li>Calendly API — Gestión de reservas</li>
-                    </ul>
-                  </div>
-
-            {/* DevOps & Tools */}
-            <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300 hover:bg-white/5 group">
-              <h3 className="text-xl font-light tracking-wider uppercase mb-6">DevOps & Tools</h3>
-              <ul className="space-y-3 text-sm font-light leading-relaxed text-white/80">
-                <li>Vercel — Deploy frontend</li>
-                <li>Railway — Deploy backend</li>
-                <li>Prisma Studio — Gestión de base de datos</li>
-                <li>ESLint + Prettier — Code quality</li>
-                    </ul>
+                </div>
               </div>
             </div>
           </section>
@@ -591,23 +644,23 @@ export default function AbaAiProject() {
                       <p className="text-sm font-light">Black</p>
                       <p className="text-xs text-white/40">#000000</p>
                     </div>
-                        </div>
+                  </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-24 bg-white"></div>
                     <div className="py-3">
                       <p className="text-sm font-light">White</p>
                       <p className="text-xs text-white/40">#FFFFFF</p>
-                      </div>
-                        </div>
+                    </div>
+                  </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-24 border-l border-white/10" style={{ backgroundColor: '#D94A00' }}></div>
                     <div className="py-3">
                       <p className="text-sm font-light">Orange Accent</p>
                       <p className="text-xs text-white/40">#D94A00</p>
-                      </div>
-                        </div>
-                      </div>
                     </div>
+                  </div>
+                </div>
+                  </div>
 
             {/* Gray Scale */}
             <div className="mb-12 border border-white/20 p-8">
@@ -617,64 +670,64 @@ export default function AbaAiProject() {
                     <div className="h-20 bg-white"></div>
                     <div className="py-3">
                       <p className="text-xs font-light text-white/60">white</p>
-                    </div>
-                        </div>
+                  </div>
+                </div>
                   <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
                     <div className="h-20 bg-gray-100"></div>
                     <div className="py-3">
                       <p className="text-xs font-light text-white/60">gray-100</p>
-                      </div>
-                        </div>
+              </div>
+            </div>
                   <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
                     <div className="h-20 bg-gray-200"></div>
                     <div className="py-3">
                       <p className="text-xs font-light text-white/60">gray-200</p>
-                      </div>
-                    </div>
+                  </div>
+                </div>
                   <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
                     <div className="h-20 bg-gray-300"></div>
                     <div className="py-3">
                       <p className="text-xs font-light text-white/60">gray-300</p>
                   </div>
-                </div>
+                  </div>
                   <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
                     <div className="h-20 bg-gray-400"></div>
                     <div className="py-3">
                       <p className="text-xs font-light text-white/60">gray-400</p>
-              </div>
-            </div>
+                  </div>
+                </div>
                   <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
                     <div className="h-20 bg-gray-500"></div>
                     <div className="py-3">
                       <p className="text-xs font-light text-white/60">gray-500</p>
-                  </div>
                 </div>
+              </div>
                   <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
                     <div className="h-20 bg-gray-600"></div>
                     <div className="py-3">
                       <p className="text-xs font-light text-white/60">gray-600</p>
-                      </div>
-                    </div>
+            </div>
+                </div>
                   <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
                     <div className="h-20 bg-gray-700"></div>
                     <div className="py-3">
                       <p className="text-xs font-light text-white/60">gray-700</p>
-                      </div>
-                    </div>
+              </div>
+            </div>
                   <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
                     <div className="h-20 bg-gray-800"></div>
                     <div className="py-3">
                       <p className="text-xs font-light text-white/60">gray-800</p>
                   </div>
-                      </div>
+                </div>
                   <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
                     <div className="h-20 bg-gray-900"></div>
                     <div className="py-3">
                       <p className="text-xs font-light text-white/60">gray-900</p>
                     </div>
-                      </div>
-                    </div>
-                  </div>
+                </div>
+                </div>
+              </div>
 
             {/* Transparencies */}
             <div className="border border-white/20 p-8">
@@ -692,32 +745,32 @@ export default function AbaAiProject() {
                     <div className="py-3 px-2">
                       <p className="text-xs font-light">black/50</p>
                       <p className="text-[10px] text-white/40">Cards</p>
-                  </div>
-                  </div>
+                          </div>
+                          </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-20 bg-white/20"></div>
                     <div className="py-3 px-2">
                       <p className="text-xs font-light">white/20</p>
                       <p className="text-[10px] text-white/40">Borders</p>
-                </div>
-                    </div>
+                        </div>
+                          </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-20 bg-white/10"></div>
                     <div className="py-3 px-2">
                       <p className="text-xs font-light">white/10</p>
                       <p className="text-[10px] text-white/40">Dividers</p>
-                  </div>
-                    </div>
+                          </div>
+                        </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-20 bg-white/5"></div>
                     <div className="py-3 px-2">
                       <p className="text-xs font-light">white/5</p>
                       <p className="text-[10px] text-white/40">Hover</p>
-                  </div>
+                      </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
                 </div>
-                  </div>
 
           {/* Typography */}
           <div className="mb-24">
@@ -728,26 +781,26 @@ export default function AbaAiProject() {
                         <div>
                   <p className="text-5xl lg:text-6xl font-light text-white mb-3 leading-tight">Display Title</p>
                   <p className="text-xs text-white/40 font-mono">text-5xl lg:text-6xl, font-light, leading-tight</p>
-                  </div>
+                    </div>
                         <div>
                   <p className="text-4xl lg:text-5xl font-light text-white mb-3 leading-tight">Section Title</p>
                   <p className="text-xs text-white/40 font-mono">text-4xl lg:text-5xl, font-light, leading-tight</p>
-                </div>
+                        </div>
                         <div>
                   <p className="text-2xl lg:text-3xl font-light text-white/80 mb-3 leading-relaxed">Subtitle</p>
                   <p className="text-xs text-white/40 font-mono">text-2xl lg:text-3xl, font-light, leading-relaxed</p>
-              </div>
+                        </div>
                         <div>
                   <p className="text-base lg:text-lg font-light text-white/60 mb-3 leading-relaxed">Body text for paragraphs and longer content. This is how regular text appears throughout the interface.</p>
                   <p className="text-xs text-white/40 font-mono">text-base lg:text-lg, font-light, leading-relaxed</p>
-            </div>
+                        </div>
                         <div>
                   <p className="text-sm font-light text-white/40 mb-3">Label</p>
                   <p className="text-xs text-white/40 font-mono">text-sm, font-light</p>
-                  </div>
+                        </div>
                 </div>
                   </div>
-                </div>
+                  </div>
 
           {/* Spacing & Layout */}
           <div className="mb-24">
@@ -760,54 +813,54 @@ export default function AbaAiProject() {
                         <div>
                       <p className="text-white mb-1">Main content</p>
                       <p className="text-xs text-white/40 font-mono">max-w-7xl (1280px)</p>
-                </div>
+                        </div>
                         <div>
                       <p className="text-white mb-1">Text content</p>
                       <p className="text-xs text-white/40 font-mono">max-w-4xl (896px)</p>
-              </div>
+                        </div>
                         <div>
                       <p className="text-white mb-1">Wide content</p>
                       <p className="text-xs text-white/40 font-mono">max-w-6xl (1152px)</p>
-            </div>
+                        </div>
+                  </div>
                 </div>
-              </div>
                 <div>
                   <h4 className="text-sm font-light uppercase mb-4 text-white/60">Padding</h4>
                   <div className="space-y-3 text-sm font-light text-white/80">
                     <div>
                       <p className="text-white mb-1">Horizontal padding</p>
                       <p className="text-xs text-white/40 font-mono">px-4 sm:px-6 lg:px-8</p>
-            </div>
+              </div>
                     <div>
                       <p className="text-white mb-1">Top spacing from header</p>
                       <p className="text-xs text-white/40 font-mono">pt-[120px]</p>
-                  </div>
+            </div>
                     <div>
                       <p className="text-white mb-1">Section spacing</p>
                       <p className="text-xs text-white/40 font-mono">mb-20 / mb-24</p>
+                  </div>
                 </div>
-                    </div>
-                </div>
+                  </div>
                 <div>
                   <h4 className="text-sm font-light uppercase mb-4 text-white/60">Gaps</h4>
                   <div className="space-y-3 text-sm font-light text-white/80">
                     <div>
                       <p className="text-white mb-1">Split layouts</p>
                       <p className="text-xs text-white/40 font-mono">gap-[76px]</p>
-                </div>
+                  </div>
                     <div>
                       <p className="text-white mb-1">Card spacing</p>
                       <p className="text-xs text-white/40 font-mono">gap-8</p>
-              </div>
+                </div>
                     <div>
                       <p className="text-white mb-1">Grid spacing</p>
                       <p className="text-xs text-white/40 font-mono">gap-6</p>
-            </div>
+                  </div>
                   </div>
                 </div>
-                          </div>
-                          </div>
-                        </div>
+                  </div>
+                  </div>
+                </div>
 
           {/* Design Principles */}
           <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300">
@@ -816,140 +869,18 @@ export default function AbaAiProject() {
                         <div>
                 <p className="text-white mb-2">Minimalism</p>
                 <p className="text-white/60">Clean interface, generous spacing, light typography</p>
-                        </div>
+                  </div>
                         <div>
                 <p className="text-white mb-2">Consistency</p>
                 <p className="text-white/60">Uniform spacing, consistent colors and typography</p>
-                        </div>
+                </div>
                         <div>
                 <p className="text-white mb-2">Elegance</p>
                 <p className="text-white/60">Smooth animations, subtle effects, refined palette</p>
-                        </div>
+                      </div>
                         <div>
                 <p className="text-white mb-2">Accessibility</p>
                 <p className="text-white/60">Adequate contrast, readable sizes, clear hover states</p>
-                        </div>
-              </div>
-            </div>
-          </section>
-
-        {/* Horizontal Divider */}
-        <div className="w-full h-px bg-white/20 my-32"></div>
-
-        {/* BLOCK 9 — Architecture & Flow */}
-        <section className="px-8 md:px-16 py-32 max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-20">
-            {t.architectureFlow}
-          </h2>
-
-          {/* Conversation Flow */}
-                        <div>
-            <h3 className="text-xl font-light tracking-wider uppercase mb-12">{t.conversationFlow}</h3>
-            <div className="border border-white/20 p-12 hover:border-white/40 transition-all duration-300">
-              <div ref={flowContainerRef} className="relative">
-                {/* Vertical line - positioned at center of number circles */}
-                <div 
-                  ref={flowLineRef}
-                  className="absolute top-6 bottom-6 w-0.5 z-20"
-                  style={{ 
-                    left: '24px',
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 100%)',
-                  }}
-                ></div>
-                
-                {/* Animated node */}
-                <div
-                  ref={flowNodeRef}
-                  className="absolute w-4 h-4 rounded-full bg-white z-20"
-                  style={{ 
-                    left: '24px',
-                    transform: 'translate(-50%, -50%)',
-                    boxShadow: '0 0 20px rgba(255,255,255,0.9), 0 0 40px rgba(255,255,255,0.5)',
-                    top: '24px'
-                  }}
-                ></div>
-                
-                <div className="space-y-16 relative">
-                  {/* Flow Step 1 */}
-                  <div data-step="1" className="flex items-center gap-8 relative">
-                    <div className="relative z-40 flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">
-                      1
-                  </div>
-                    <div className="flex-1">
-                      <p className="text-lg font-light text-white/90">{t.step1}</p>
-                  </div>
-                </div>
-
-                  {/* Flow Step 2 */}
-                  <div data-step="2" className="flex items-center gap-8 relative">
-                    <div className="relative z-40 flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">
-                      2
-                  </div>
-                    <div className="flex-1">
-                      <p className="text-lg font-light text-white/90">{t.step2}</p>
-                  </div>
-                </div>
-
-                  {/* Flow Step 3 */}
-                  <div data-step="3" className="flex items-center gap-8 relative">
-                    <div className="relative z-40 flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">
-                      3
-                  </div>
-                    <div className="flex-1">
-                      <p className="text-lg font-light text-white/90">{t.step3}</p>
-                  </div>
-                </div>
-
-                  {/* Flow Step 4 */}
-                  <div data-step="4" className="flex items-center gap-8 relative">
-                    <div className="relative z-40 flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">
-                      4
-                  </div>
-                    <div className="flex-1">
-                      <p className="text-lg font-light text-white/90">{t.step4}</p>
-                </div>
-                      </div>
-
-                  {/* Flow Step 5 */}
-                  <div data-step="5" className="flex items-center gap-8 relative">
-                    <div className="relative z-40 flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">
-                      5
-                  </div>
-                    <div className="flex-1">
-                      <p className="text-lg font-light text-white/90">{t.step5}</p>
-                </div>
-                </div>
-
-                  {/* Flow Step 6 */}
-                  <div data-step="6" className="flex items-center gap-8 relative">
-                    <div className="relative z-40 flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">
-                      6
-                        </div>
-                    <div className="flex-1">
-                      <p className="text-lg font-light text-white/90">{t.step6}</p>
-                  </div>
-                </div>
-
-                  {/* Flow Step 7 */}
-                  <div data-step="7" className="flex items-center gap-8 relative">
-                    <div className="relative z-40 flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">
-                      7
-                </div>
-                    <div className="flex-1">
-                      <p className="text-lg font-light text-white/90">{t.step7}</p>
-              </div>
-            </div>
-
-                  {/* Flow Step 8 */}
-                  <div data-step="8" className="flex items-center gap-8 relative">
-                    <div className="relative z-40 flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">
-                      8
-                </div>
-                    <div className="flex-1">
-                      <p className="text-lg font-light text-white/90">{t.step8}</p>
-                    </div>
-                  </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -963,7 +894,7 @@ export default function AbaAiProject() {
           <div className="space-y-4 text-lg font-light mb-12">
             <p>Abril Marangoni</p>
             <p>Buenos Aires, Argentina</p>
-          </div>
+                    </div>
           <div className="space-y-2 text-lg font-light">
             <a href="#" className="block hover:opacity-60 transition-opacity duration-300">
               Privacy
