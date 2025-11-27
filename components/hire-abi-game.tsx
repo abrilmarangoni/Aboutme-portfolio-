@@ -83,15 +83,7 @@ interface Wall {
   height: number
 }
 
-interface ScoreEntry {
-  score: number
-  pixelsDestroyed: number
-  timeMs: number
-  date: string
-  companyName: string
-}
-
-export function PromptingIsAllYouNeed() {
+export function HireAbiGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const pixelsRef = useRef<Pixel[]>([])
@@ -107,7 +99,7 @@ export function PromptingIsAllYouNeed() {
   const [score, setScore] = useState(0)
   const [pixelsDestroyed, setPixelsDestroyed] = useState(0)
   const [showRanking, setShowRanking] = useState(false)
-  const [ranking, setRanking] = useState<{ easy: Array<ScoreEntry>; medium: Array<ScoreEntry>; hard: Array<ScoreEntry> }>({ easy: [], medium: [], hard: [] })
+  const [ranking, setRanking] = useState<{ easy: Array<{ score: number; pixelsDestroyed: number; timeMs: number; date: string; companyName: string }>; medium: Array<{ score: number; pixelsDestroyed: number; timeMs: number; date: string; companyName: string }>; hard: Array<{ score: number; pixelsDestroyed: number; timeMs: number; date: string; companyName: string }> }>({ easy: [], medium: [], hard: [] })
   const gameStateRef = useRef<"idle" | "playing" | "won" | "lost">("idle")
   const keysPressed = useRef<{ [key: string]: boolean }>({})
   const handleStartGameRef = useRef<(() => void) | null>(null)
@@ -117,6 +109,7 @@ export function PromptingIsAllYouNeed() {
   const gameOverRef = useRef<boolean>(false)
   const currentScoreRef = useRef<number>(0)
   const scoreSavedRef = useRef<boolean>(false)
+  const rankingRef = useRef<HTMLDivElement>(null)
 
   // Sincronizar ref con estado
   useEffect(() => {
@@ -165,6 +158,23 @@ export function PromptingIsAllYouNeed() {
     }
     loadRanking()
   }, [])
+
+  // Cerrar ranking al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showRanking && rankingRef.current && !rankingRef.current.contains(event.target as Node)) {
+        setShowRanking(false)
+      }
+    }
+
+    if (showRanking) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showRanking])
 
   // Función para guardar score en el ranking (solo una vez)
   const saveScore = useCallback(async (finalScore: number, difficulty: "easy" | "medium" | "hard", pixelsDestroyed: number, timeMs: number, companyName: string) => {
@@ -288,6 +298,7 @@ export function PromptingIsAllYouNeed() {
       currentX += (pixelMap[0].length + LETTER_SPACING) * PIXEL_SIZE
     })
   }, [])
+
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -501,6 +512,7 @@ export function PromptingIsAllYouNeed() {
         const paddle = paddleRef.current
         ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height)
       }
+
     }
 
     const gameLoop = () => {
@@ -517,7 +529,7 @@ export function PromptingIsAllYouNeed() {
     return () => {
       window.removeEventListener("resize", resizeCanvas)
     }
-  }, [gameState, difficulty, updateScore, freezeScore, saveScore, resetGame])
+  }, [gameState])
 
   // Listeners de teclado separados que no dependen de gameState
   useEffect(() => {
@@ -575,7 +587,6 @@ export function PromptingIsAllYouNeed() {
     setScore(0)
     setPixelsDestroyed(0)
     gameStartTimeRef.current = Date.now()
-    companyNameRef.current = companyName.trim() || "Anonymous"
 
     ballRef.current = {
       x: gameAreaOffsetX + gameAreaWidth / 2,
@@ -642,9 +653,10 @@ export function PromptingIsAllYouNeed() {
                     onClick={() => setDifficulty("easy")}
                     className={`flex-1 py-2 text-xs font-mono transition-all cursor-pointer border-2 ${
                       difficulty === "easy"
-                        ? "bg-[#d97706] text-white border-[#d97706]"
-                        : "bg-transparent text-white/70 border-stone-700 hover:border-stone-600"
+                        ? "bg-stone-700 text-white border-stone-500 fill-stone-700"
+                        : "bg-transparent text-white/60 border-stone-800 hover:border-stone-700 hover:text-white/80"
                     }`}
+                    style={difficulty === "easy" ? { backgroundColor: '#404040' } : {}}
                   >
                     Easy
                   </button>
@@ -652,9 +664,10 @@ export function PromptingIsAllYouNeed() {
                     onClick={() => setDifficulty("medium")}
                     className={`flex-1 py-2 text-xs font-mono transition-all cursor-pointer border-2 ${
                       difficulty === "medium"
-                        ? "bg-[#d97706] text-white border-[#d97706]"
-                        : "bg-transparent text-white/70 border-stone-700 hover:border-stone-600"
+                        ? "bg-stone-700 text-white border-stone-500 fill-stone-700"
+                        : "bg-transparent text-white/60 border-stone-800 hover:border-stone-700 hover:text-white/80"
                     }`}
+                    style={difficulty === "medium" ? { backgroundColor: '#404040' } : {}}
                   >
                     Medium
                   </button>
@@ -662,9 +675,10 @@ export function PromptingIsAllYouNeed() {
                     onClick={() => setDifficulty("hard")}
                     className={`flex-1 py-2 text-xs font-mono transition-all cursor-pointer border-2 ${
                       difficulty === "hard"
-                        ? "bg-[#d97706] text-white border-[#d97706]"
-                        : "bg-transparent text-white/70 border-stone-700 hover:border-stone-600"
+                        ? "bg-stone-700 text-white border-stone-500 fill-stone-700"
+                        : "bg-transparent text-white/60 border-stone-800 hover:border-stone-700 hover:text-white/80"
                     }`}
+                    style={difficulty === "hard" ? { backgroundColor: '#404040' } : {}}
                   >
                     Hard
                   </button>
@@ -709,142 +723,140 @@ export function PromptingIsAllYouNeed() {
               </button>
             </div>
           </div>
-        </div>
-      )}
-      {showRanking && gameState === "idle" && (
-        <div className="absolute top-8 right-8 border border-stone-800 bg-black p-6 max-w-lg w-full max-h-[500px] overflow-y-auto">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-white font-mono text-xs uppercase tracking-wider">Rankings</h3>
-              <p className="text-white/30 font-mono text-[9px] mt-1">Local storage (dev mode)</p>
-            </div>
-            <button
-              onClick={async () => {
-                console.log('Manual ranking reload...')
-                const response = await fetch('/api/ranking')
-                if (response.ok) {
-                  const data = await response.json()
-                  console.log('Manual reload data:', data)
-                  setRanking(data)
-                }
-              }}
-              className="text-white/50 hover:text-white/80 font-mono text-[10px] px-2 py-1 border border-stone-700 hover:border-stone-500 transition-colors"
-            >
-              Reload
-            </button>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            {/* Easy Ranking */}
-            <div>
-              <h4 className="text-white/80 font-mono text-[10px] mb-3 uppercase tracking-wider border-b border-stone-800 pb-1">Easy</h4>
-              <div className="space-y-2">
-                {ranking.easy.length > 0 ? (
-                  ranking.easy.slice(0, 10).map((entry, index) => {
-                    const getTrophyColor = () => {
-                      if (index === 0) return "#FFD700" // Oro
-                      if (index === 1) return "#C0C0C0" // Plata
-                      if (index === 2) return "#CD7F32" // Bronce
-                      return null
+          
+          {showRanking && (
+            <div ref={rankingRef} className="absolute top-8 right-8 border border-stone-800 bg-black p-6 max-w-lg w-full max-h-[500px] overflow-y-auto z-50">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-white font-mono text-xs uppercase tracking-wider">Rankings</h3>
+                <button
+                  onClick={async () => {
+                    console.log('Manual ranking reload...')
+                    const response = await fetch('/api/ranking')
+                    if (response.ok) {
+                      const data = await response.json()
+                      console.log('Manual reload data:', data)
+                      setRanking(data)
                     }
-                    const trophyColor = getTrophyColor()
-                    return (
-                      <div key={index} className="text-white/60 font-mono text-[10px]">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1">
-                            {trophyColor ? (
-                              <Trophy className="h-3 w-3" style={{ color: trophyColor }} fill={trophyColor} />
-                            ) : (
-                              <span>#{index + 1}</span>
-                            )}
+                  }}
+                  className="text-white/50 hover:text-white/80 font-mono text-[10px] px-2 py-1 border border-stone-700 hover:border-stone-500 transition-colors"
+                >
+                  Reload
+                </button>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                {/* Easy Ranking */}
+                <div>
+                  <h4 className="text-white/80 font-mono text-[10px] mb-3 uppercase tracking-wider border-b border-stone-800 pb-1">Easy</h4>
+                  <div className="space-y-2">
+                    {ranking.easy.length > 0 ? (
+                      ranking.easy.slice(0, 10).map((entry, index) => {
+                        const getTrophyColor = () => {
+                          if (index === 0) return "#FFD700" // Oro
+                          if (index === 1) return "#C0C0C0" // Plata
+                          if (index === 2) return "#CD7F32" // Bronce
+                          return null
+                        }
+                        const trophyColor = getTrophyColor()
+                        return (
+                          <div key={index} className="text-white/60 font-mono text-[10px]">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1">
+                                {trophyColor ? (
+                                  <Trophy className="h-3 w-3" style={{ color: trophyColor }} fill={trophyColor} />
+                                ) : (
+                                  <span>#{index + 1}</span>
+                                )}
+                              </div>
+                              <span>{entry.score.toLocaleString()}</span>
+                            </div>
+                            <div className="text-white/40 text-[9px] truncate mt-0.5 pl-4">
+                              {entry.companyName}
+                            </div>
                           </div>
-                          <span>{entry.score.toLocaleString()}</span>
-                        </div>
-                        <div className="text-white/40 text-[9px] truncate mt-0.5 pl-4">
-                          {entry.companyName}
-                        </div>
-                      </div>
-                    )
-                  })
-                ) : (
-                  <div className="text-white/30 font-mono text-[10px] text-center py-4">—</div>
-                )}
+                        )
+                      })
+                    ) : (
+                      <div className="text-white/30 font-mono text-[10px] text-center py-4">—</div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Medium Ranking */}
+                <div>
+                  <h4 className="text-white/80 font-mono text-[10px] mb-3 uppercase tracking-wider border-b border-stone-800 pb-1">Medium</h4>
+                  <div className="space-y-2">
+                    {ranking.medium.length > 0 ? (
+                      ranking.medium.slice(0, 10).map((entry, index) => {
+                        const getTrophyColor = () => {
+                          if (index === 0) return "#FFD700" // Oro
+                          if (index === 1) return "#C0C0C0" // Plata
+                          if (index === 2) return "#CD7F32" // Bronce
+                          return null
+                        }
+                        const trophyColor = getTrophyColor()
+                        return (
+                          <div key={index} className="text-white/60 font-mono text-[10px]">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1">
+                                {trophyColor ? (
+                                  <Trophy className="h-3 w-3" style={{ color: trophyColor }} fill={trophyColor} />
+                                ) : (
+                                  <span>#{index + 1}</span>
+                                )}
+                              </div>
+                              <span>{entry.score.toLocaleString()}</span>
+                            </div>
+                            <div className="text-white/40 text-[9px] truncate mt-0.5 pl-4">
+                              {entry.companyName}
+                            </div>
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <div className="text-white/30 font-mono text-[10px] text-center py-4">—</div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Hard Ranking */}
+                <div>
+                  <h4 className="text-white/80 font-mono text-[10px] mb-3 uppercase tracking-wider border-b border-stone-800 pb-1">Hard</h4>
+                  <div className="space-y-2">
+                    {ranking.hard.length > 0 ? (
+                      ranking.hard.slice(0, 10).map((entry, index) => {
+                        const getTrophyColor = () => {
+                          if (index === 0) return "#FFD700" // Oro
+                          if (index === 1) return "#C0C0C0" // Plata
+                          if (index === 2) return "#CD7F32" // Bronce
+                          return null
+                        }
+                        const trophyColor = getTrophyColor()
+                        return (
+                          <div key={index} className="text-white/60 font-mono text-[10px]">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1">
+                                {trophyColor ? (
+                                  <Trophy className="h-3 w-3" style={{ color: trophyColor }} fill={trophyColor} />
+                                ) : (
+                                  <span>#{index + 1}</span>
+                                )}
+                              </div>
+                              <span>{entry.score.toLocaleString()}</span>
+                            </div>
+                            <div className="text-white/40 text-[9px] truncate mt-0.5 pl-4">
+                              {entry.companyName}
+                            </div>
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <div className="text-white/30 font-mono text-[10px] text-center py-4">—</div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-            
-            {/* Medium Ranking */}
-            <div>
-              <h4 className="text-white/80 font-mono text-[10px] mb-3 uppercase tracking-wider border-b border-stone-800 pb-1">Medium</h4>
-              <div className="space-y-2">
-                {ranking.medium.length > 0 ? (
-                  ranking.medium.slice(0, 10).map((entry, index) => {
-                    const getTrophyColor = () => {
-                      if (index === 0) return "#FFD700" // Oro
-                      if (index === 1) return "#C0C0C0" // Plata
-                      if (index === 2) return "#CD7F32" // Bronce
-                      return null
-                    }
-                    const trophyColor = getTrophyColor()
-                    return (
-                      <div key={index} className="text-white/60 font-mono text-[10px]">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1">
-                            {trophyColor ? (
-                              <Trophy className="h-3 w-3" style={{ color: trophyColor }} fill={trophyColor} />
-                            ) : (
-                              <span>#{index + 1}</span>
-                            )}
-                          </div>
-                          <span>{entry.score.toLocaleString()}</span>
-                        </div>
-                        <div className="text-white/40 text-[9px] truncate mt-0.5 pl-4">
-                          {entry.companyName}
-                        </div>
-                      </div>
-                    )
-                  })
-                ) : (
-                  <div className="text-white/30 font-mono text-[10px] text-center py-4">—</div>
-                )}
-              </div>
-            </div>
-            
-            {/* Hard Ranking */}
-            <div>
-              <h4 className="text-white/80 font-mono text-[10px] mb-3 uppercase tracking-wider border-b border-stone-800 pb-1">Hard</h4>
-              <div className="space-y-2">
-                {ranking.hard.length > 0 ? (
-                  ranking.hard.slice(0, 10).map((entry, index) => {
-                    const getTrophyColor = () => {
-                      if (index === 0) return "#FFD700" // Oro
-                      if (index === 1) return "#C0C0C0" // Plata
-                      if (index === 2) return "#CD7F32" // Bronce
-                      return null
-                    }
-                    const trophyColor = getTrophyColor()
-                    return (
-                      <div key={index} className="text-white/60 font-mono text-[10px]">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1">
-                            {trophyColor ? (
-                              <Trophy className="h-3 w-3" style={{ color: trophyColor }} fill={trophyColor} />
-                            ) : (
-                              <span>#{index + 1}</span>
-                            )}
-                          </div>
-                          <span>{entry.score.toLocaleString()}</span>
-                        </div>
-                        <div className="text-white/40 text-[9px] truncate mt-0.5 pl-4">
-                          {entry.companyName}
-                        </div>
-                      </div>
-                    )
-                  })
-                ) : (
-                  <div className="text-white/30 font-mono text-[10px] text-center py-4">—</div>
-                )}
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       )}
       {gameState === "playing" && (
@@ -898,4 +910,4 @@ export function PromptingIsAllYouNeed() {
   )
 }
 
-export default PromptingIsAllYouNeed
+export default HireAbiGame
