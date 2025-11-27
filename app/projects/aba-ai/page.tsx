@@ -10,6 +10,7 @@ export default function AbaAiProject() {
   const [language, setLanguage] = useState<"en" | "es">("en")
   const [darkMode, setDarkMode] = useState(false)
   const [horizontalTitle, setHorizontalTitle] = useState("Our Mission")
+  const [hoveredTechCard, setHoveredTechCard] = useState<number | null>(null)
   const horizontalSectionRef = useRef<HTMLElement>(null)
   const horizontalTrackRef = useRef<HTMLDivElement>(null)
   const flowLineRef = useRef<HTMLDivElement>(null)
@@ -462,8 +463,21 @@ export default function AbaAiProject() {
           <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
             TECH STACK
                     </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300 group">
+          <div 
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            onMouseLeave={() => setHoveredTechCard(null)}
+          >
+            {/* Frontend */}
+            <div 
+              className={`border border-white/20 p-6 transition-all duration-500 ease-out group cursor-pointer ${
+                hoveredTechCard === 0 
+                  ? 'scale-105 border-[#D94A00]/60 shadow-[0_0_30px_rgba(217,74,0,0.15)]' 
+                  : hoveredTechCard !== null 
+                    ? 'scale-95 opacity-50' 
+                    : 'hover:border-white/40'
+              }`}
+              onMouseEnter={() => setHoveredTechCard(0)}
+            >
               <h3 className="text-lg font-light tracking-wider uppercase mb-4">Frontend</h3>
               <ul className="space-y-2 text-sm font-light text-white/80 mb-6">
                 <li>React 18 + TypeScript</li>
@@ -475,13 +489,24 @@ export default function AbaAiProject() {
               </ul>
               <Link 
                 href="/projects/aba-ai/code#frontend" 
-                className="inline-flex items-center gap-2 text-xs font-light text-white/50 hover:text-[#D94A00] transition-colors duration-300"
+                className="inline-flex items-center gap-2 text-xs font-light text-[#D94A00] hover:text-[#ff6b1a] transition-colors duration-300"
               >
                 <span>View Code</span>
                 <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
               </Link>
-                  </div>
-            <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300 group">
+                </div>
+
+            {/* Backend */}
+            <div 
+              className={`border border-white/20 p-6 transition-all duration-500 ease-out group cursor-pointer ${
+                hoveredTechCard === 1 
+                  ? 'scale-105 border-[#D94A00]/60 shadow-[0_0_30px_rgba(217,74,0,0.15)]' 
+                  : hoveredTechCard !== null 
+                    ? 'scale-95 opacity-50' 
+                    : 'hover:border-white/40'
+              }`}
+              onMouseEnter={() => setHoveredTechCard(1)}
+            >
               <h3 className="text-lg font-light tracking-wider uppercase mb-4">Backend</h3>
               <ul className="space-y-2 text-sm font-light text-white/80 mb-6">
                 <li>NestJS + TypeScript</li>
@@ -492,13 +517,24 @@ export default function AbaAiProject() {
               </ul>
               <Link 
                 href="/projects/aba-ai/code#backend" 
-                className="inline-flex items-center gap-2 text-xs font-light text-white/50 hover:text-[#D94A00] transition-colors duration-300"
+                className="inline-flex items-center gap-2 text-xs font-light text-[#D94A00] hover:text-[#ff6b1a] transition-colors duration-300"
               >
                 <span>View Code</span>
                 <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
               </Link>
-                </div>
-            <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300 group">
+                    </div>
+
+            {/* AI & Integrations */}
+            <div 
+              className={`border border-white/20 p-6 transition-all duration-500 ease-out group cursor-pointer ${
+                hoveredTechCard === 2 
+                  ? 'scale-105 border-[#D94A00]/60 shadow-[0_0_30px_rgba(217,74,0,0.15)]' 
+                  : hoveredTechCard !== null 
+                    ? 'scale-95 opacity-50' 
+                    : 'hover:border-white/40'
+              }`}
+              onMouseEnter={() => setHoveredTechCard(2)}
+            >
               <h3 className="text-lg font-light tracking-wider uppercase mb-4">AI & Integrations</h3>
               <ul className="space-y-2 text-sm font-light text-white/80 mb-6">
                 <li>OpenAI GPT-5.1</li>
@@ -508,13 +544,24 @@ export default function AbaAiProject() {
               </ul>
               <Link 
                 href="/projects/aba-ai/code#ai" 
-                className="inline-flex items-center gap-2 text-xs font-light text-white/50 hover:text-[#D94A00] transition-colors duration-300"
+                className="inline-flex items-center gap-2 text-xs font-light text-[#D94A00] hover:text-[#ff6b1a] transition-colors duration-300"
               >
                 <span>View Code</span>
                 <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
               </Link>
-                      </div>
-            <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300 group">
+                    </div>
+
+            {/* DevOps */}
+            <div 
+              className={`border border-white/20 p-6 transition-all duration-500 ease-out group cursor-pointer ${
+                hoveredTechCard === 3 
+                  ? 'scale-105 border-[#D94A00]/60 shadow-[0_0_30px_rgba(217,74,0,0.15)]' 
+                  : hoveredTechCard !== null 
+                    ? 'scale-95 opacity-50' 
+                    : 'hover:border-white/40'
+              }`}
+              onMouseEnter={() => setHoveredTechCard(3)}
+            >
               <h3 className="text-lg font-light tracking-wider uppercase mb-4">DevOps</h3>
               <ul className="space-y-2 text-sm font-light text-white/80 mb-6">
                 <li>Vercel — Frontend</li>
@@ -524,7 +571,7 @@ export default function AbaAiProject() {
               </ul>
               <Link 
                 href="/projects/aba-ai/code#devops" 
-                className="inline-flex items-center gap-2 text-xs font-light text-white/50 hover:text-[#D94A00] transition-colors duration-300"
+                className="inline-flex items-center gap-2 text-xs font-light text-[#D94A00] hover:text-[#ff6b1a] transition-colors duration-300"
               >
                 <span>View Code</span>
                 <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
