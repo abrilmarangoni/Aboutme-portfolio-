@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowLeft, Globe, Sun, Moon, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -371,8 +372,8 @@ export default function AbaAiProject() {
       {/* Main Content */}
       <main className="relative z-10">
         {/* BLOCK 1 — Hero */}
-        <section className="relative w-full min-h-screen flex items-center justify-center px-8 md:px-16">
-          <div className="max-w-7xl mx-auto text-center pt-32">
+        <section className="relative w-full min-h-screen flex flex-col items-center justify-center">
+          <div className="max-w-7xl mx-auto text-center w-full px-8 md:px-16" style={{ paddingTop: 'calc(128px + 50px)' }}>
             {/* Content */}
             <div className="max-w-4xl mx-auto">
             <div className="space-y-8">
@@ -394,11 +395,29 @@ export default function AbaAiProject() {
                   <p className="text-sm font-light text-white/60">Full-Stack SaaS Platform</p>
                   <p className="text-sm font-light text-white/60">built and design by abi marangoni</p>
                   <p className="text-sm font-light text-white/60">2025</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+          {/* Image - aligned exactly with vertical lines */}
+          <div 
+            className="w-full"
+            style={{
+              marginTop: 'calc(24px - 250px)',
+              paddingLeft: 'max(27px, calc(50vw - 640px - 5px))',
+              paddingRight: 'max(27px, calc(50vw - 640px - 5px))'
+            }}
+          >
+                <Image
+              src="/images/MANO2.png"
+              alt="ABA IA"
+              width={1280}
+              height={800}
+              className="w-full h-auto object-cover grayscale opacity-40"
+                  priority
+                />
+            </div>
+          </section>
 
         {/* Horizontal Divider */}
         <div className="w-full h-px bg-white/20 my-32"></div>
@@ -431,10 +450,10 @@ export default function AbaAiProject() {
                       </p>
                       <p>
                         We exist to empower businesses to scale their support, save time, and serve their customers better — with technology that feels simple, human, and truly helpful.
-              </p>
-            </div>
+                        </p>
+                      </div>
                 </div>
-                </div>
+              </div>
 
                 {/* Slide 2 — THE PROBLEM & THE OPPORTUNITY */}
                 <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
@@ -449,9 +468,9 @@ export default function AbaAiProject() {
                       <p>
                         The opportunity is straightforward: conversational AI can respond instantly, scale without hiring more staff, and give smaller businesses the power to compete with big companies. It turns every message into a potential sale, improves the customer experience, and frees teams to focus on what actually drives growth — all without increasing operational costs.
                         </p>
+                  </div>
                       </div>
-                </div>
-              </div>
+                    </div>
 
                 {/* Slide 3 — THE SOLUTION */}
                 <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
@@ -477,7 +496,7 @@ export default function AbaAiProject() {
                         </p>
                   </div>
                 </div>
-                      </div>
+                    </div>
                 </div>
               </div>
             </div>
