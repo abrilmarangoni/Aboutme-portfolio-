@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { X, Mail, Phone, Linkedin } from 'lucide-react'
+import { X, Mail, Phone, Linkedin, Calendar } from 'lucide-react'
 
 interface SurveyModalProps {
   isOpen: boolean
@@ -12,6 +12,7 @@ interface SurveyModalProps {
 
 export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: SurveyModalProps) {
   const [dodgePositions, setDodgePositions] = useState<{ [key: number]: { x: number; y: number } }>({})
+  const [buttonOpacity, setButtonOpacity] = useState<{ [key: number]: number }>({})
   const [showSuccess, setShowSuccess] = useState(false)
   const modalRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -20,6 +21,7 @@ export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: Surv
   useEffect(() => {
     if (!isOpen) {
       setDodgePositions({})
+      setButtonOpacity({})
       setMousePosition(null)
       setShowSuccess(false)
     }
@@ -40,20 +42,42 @@ export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: Surv
       }
     }
 
+    let rafId: number | null = null
+    let lastUpdate = 0
+    const throttleDelay = 16 // ~60fps
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect()
-        setMousePosition({
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-        })
+      const now = Date.now()
+      if (now - lastUpdate < throttleDelay) {
+        if (!rafId) {
+          rafId = requestAnimationFrame(() => {
+            if (containerRef.current) {
+              const rect = containerRef.current.getBoundingClientRect()
+              setMousePosition({
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top,
+              })
+            }
+            rafId = null
+            lastUpdate = Date.now()
+          })
+        }
+      } else {
+        if (containerRef.current) {
+          const rect = containerRef.current.getBoundingClientRect()
+          setMousePosition({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+          })
+        }
+        lastUpdate = now
       }
     }
 
     document.addEventListener("keydown", handleEscape)
     document.addEventListener("mousedown", handleClickOutside)
     if (containerRef.current) {
-      containerRef.current.addEventListener("mousemove", handleMouseMove)
+      containerRef.current.addEventListener("mousemove", handleMouseMove, { passive: true })
     }
     document.body.style.overflow = "hidden"
 
@@ -63,54 +87,48 @@ export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: Surv
       if (containerRef.current) {
         containerRef.current.removeEventListener("mousemove", handleMouseMove)
       }
+      if (rafId) {
+        cancelAnimationFrame(rafId)
+      }
       document.body.style.overflow = "unset"
     }
   }, [isOpen, onClose])
 
+  // Posiciones de escape fijas para cada botón (fuera de la pantalla)
+  const escapePositions = [
+    { x: -400, y: -200 },  // Botón 1: arriba izquierda, fuera de pantalla
+    { x: 400, y: -200 },   // Botón 2: arriba derecha, fuera de pantalla
+    { x: 0, y: 300 },      // Botón 3: abajo centro, fuera de pantalla
+  ]
+
   useEffect(() => {
     if (!mousePosition || !containerRef.current) return
 
-    const dodgeOptions = [
-      { text: "Not really…", index: 0 },
-      { text: "Maybe, I'm not sure yet", index: 1 },
-      { text: "Interested – let's keep talking", index: 2 },
-    ]
-
-    dodgeOptions.forEach(({ index }) => {
-      const buttonElement = document.getElementById(`dodge-button-${index}`)
-      if (!buttonElement) return
-
-      const rect = buttonElement.getBoundingClientRect()
-      const containerRect = containerRef.current!.getBoundingClientRect()
-      
-      // Button center relative to container
-      const buttonCenterX = rect.left + rect.width / 2 - containerRect.left
-      const buttonCenterY = rect.top + rect.height / 2 - containerRect.top
-
-      // Calculate distance from mouse to button center
-      const distance = Math.sqrt(
-        Math.pow(mousePosition.x - buttonCenterX, 2) +
-        Math.pow(mousePosition.y - buttonCenterY, 2)
-      )
-
-      const detectionRadius = 150
-      if (distance < detectionRadius) {
-        // Calculate direction away from mouse
-        const angle = Math.atan2(
-          buttonCenterY - mousePosition.y,
-          buttonCenterX - mousePosition.x
-        )
-        
-        const dodgeDistance = 250 + Math.random() * 150
-        const newX = Math.cos(angle) * dodgeDistance
-        const newY = Math.sin(angle) * dodgeDistance
-
-        setDodgePositions((prev) => ({
-          ...prev,
-          [index]: { x: newX, y: newY },
-        }))
+    // Verificar si el mouse está en el área de los botones (parte superior del contenedor)
+    const containerRect = containerRef.current.getBoundingClientRect()
+    const buttonsAreaTop = 0
+    const buttonsAreaBottom = containerRect.height * 0.7 // 70% del contenedor es donde están los botones
+    
+    // Si el mouse está en el área de los botones, moverlos todos
+    if (mousePosition.y > buttonsAreaTop && mousePosition.y < buttonsAreaBottom) {
+      // Mover todos los botones a sus posiciones de escape
+      setDodgePositions({
+        0: escapePositions[0],
+        1: escapePositions[1],
+        2: escapePositions[2],
+      })
+      setButtonOpacity({
+        0: 0.2,
+        1: 0.2,
+        2: 0.2,
+      })
+    } else {
+      // Si el mouse está fuera del área, volver a la normalidad
+      if (Object.keys(dodgePositions).length > 0) {
+        setDodgePositions({})
+        setButtonOpacity({})
       }
-    })
+    }
   }, [mousePosition])
 
   const handleDodge = (buttonIndex: number, e: React.MouseEvent | React.TouchEvent) => {
@@ -127,9 +145,9 @@ export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: Surv
     const maxX = containerRect.width - buttonWidth - padding * 2
     const maxY = containerRect.height - buttonHeight - padding * 2
 
-    // Generate random position within safe bounds
-    const randomX = (Math.random() - 0.5) * (maxX * 1.5)
-    const randomY = (Math.random() - 0.5) * (maxY * 1.5)
+    // Generate random position further away to make it harder
+    const randomX = (Math.random() - 0.5) * (maxX * 2)
+    const randomY = (Math.random() - 0.5) * (maxY * 2)
 
     setDodgePositions((prev) => ({
       ...prev,
@@ -223,7 +241,7 @@ export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: Surv
             <div className="space-y-4 py-4">
               {/* Email */}
               <a
-                href="mailto:abrilmarangoni@gmail.com"
+                href="mailto:abie.marangoni@gmail.com"
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
               >
                 <div className="p-2 bg-stone-100 dark:bg-stone-800 rounded-lg group-hover:bg-stone-200 dark:group-hover:bg-stone-700 transition-colors">
@@ -231,13 +249,13 @@ export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: Surv
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-light text-stone-500 dark:text-stone-500">{currentTranslations.email}</p>
-                  <p className="text-sm font-light text-stone-900 dark:text-stone-100">abrilmarangoni@gmail.com</p>
+                  <p className="text-sm font-light text-stone-900 dark:text-stone-100">abie.marangoni@gmail.com</p>
                 </div>
               </a>
 
               {/* Phone */}
               <a
-                href="tel:+5492234141654"
+                href="tel:+5492235500594"
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
               >
                 <div className="p-2 bg-stone-100 dark:bg-stone-800 rounded-lg group-hover:bg-stone-200 dark:group-hover:bg-stone-700 transition-colors">
@@ -245,7 +263,7 @@ export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: Surv
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-light text-stone-500 dark:text-stone-500">{currentTranslations.phone}</p>
-                  <p className="text-sm font-light text-stone-900 dark:text-stone-100">+54 9 223 414-1654</p>
+                  <p className="text-sm font-light text-stone-900 dark:text-stone-100">+54 9 223 550-0594</p>
                 </div>
               </a>
 
@@ -262,6 +280,22 @@ export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: Surv
                 <div className="flex-1">
                   <p className="text-xs font-light text-stone-500 dark:text-stone-500">{currentTranslations.linkedin}</p>
                   <p className="text-sm font-light text-stone-900 dark:text-stone-100">Abril Marangoni</p>
+                </div>
+              </a>
+
+              {/* Calendly */}
+              <a
+                href="https://calendly.com/abie-marangoni/30min"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
+              >
+                <div className="p-2 bg-stone-100 dark:bg-stone-800 rounded-lg group-hover:bg-stone-200 dark:group-hover:bg-stone-700 transition-colors">
+                  <Calendar className="h-5 w-5 text-stone-700 dark:text-stone-300" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-light text-stone-500 dark:text-stone-500">Calendly</p>
+                  <p className="text-sm font-light text-stone-900 dark:text-stone-100">Let's meet</p>
                 </div>
               </a>
             </div>
@@ -296,8 +330,9 @@ export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: Surv
                     transform: dodgePositions[index]
                       ? `translate(${dodgePositions[index].x}px, ${dodgePositions[index].y}px)`
                       : "translate(0, 0)",
-                    transition: "transform 0.15s ease-out",
-                    position: dodgePositions[index] ? "relative" : "static",
+                    transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out",
+                    opacity: buttonOpacity[index] !== undefined ? buttonOpacity[index] : 1,
+                    pointerEvents: (dodgePositions[index] || buttonOpacity[index] !== undefined) ? "none" : "auto",
                   }}
                 >
                   {text}
@@ -307,13 +342,19 @@ export function SurveyModal({ isOpen, onClose, darkMode, language = "en" }: Surv
               {/* Clickable button */}
               <button
                 onClick={handleHireClick}
-                className="w-full px-6 py-3 text-sm font-light text-white bg-rose-500 border border-rose-500 rounded-md hover:bg-rose-600 hover:border-rose-600 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full px-6 py-3 text-sm font-light text-white bg-[#d97706] border border-[#d97706] rounded-md hover:bg-[#b86205] hover:border-[#b86205] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
               >
                 {currentTranslations.veryLikely}
               </button>
             </div>
 
-            <p className="text-xs font-light text-stone-500 dark:text-stone-500 italic text-center leading-relaxed">
+            <p 
+              className={`text-xs font-light italic text-center leading-relaxed transition-colors duration-300 ${
+                Object.keys(dodgePositions).length > 0 
+                  ? "text-[#d97706]" 
+                  : "text-stone-500 dark:text-stone-500"
+              }`}
+            >
               {currentTranslations.microcopy1}
               <br />
               {currentTranslations.microcopy2}

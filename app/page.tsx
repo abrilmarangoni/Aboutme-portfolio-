@@ -246,7 +246,7 @@ export default function Portfolio() {
       thoughtsInsights: "Thoughts & Insights",
       letsConnect: "Let's Connect",
       heroTitle:
-        "Hi, I'm Abi — a developer, UX/UI designer, and business student crafting digital experiences that blend design, technology, and strategy.",
+        "Hi, I'm Abi — I wrote \"Hello World\" in HTML at 12, and my entire personality quietly formed around it.",
       heroDescription1:
         "I craft interfaces that feel intuitive, products that solve real problems, and experiences that connect people to technology in meaningful ways.",
       heroDescription2:
@@ -608,10 +608,10 @@ export default function Portfolio() {
 
                 <div className="flex space-x-6 pt-4">
                   <a
-                    href="mailto:marangonii.abril@gmail.com"
+                    href="mailto:abie.marangoni@gmail.com"
                     className="text-sm font-light hover:text-stone-600 dark:hover:text-stone-400 transition-colors duration-300 relative group"
                   >
-                    marangonii.abril@gmail.com
+                    abie.marangoni@gmail.com
                     <span className="absolute -bottom-1 left-0 w-0 h-px bg-amber-600 group-hover:w-full transition-all duration-300"></span>
                   </a>
                   <a
@@ -621,6 +621,15 @@ export default function Portfolio() {
                     className="text-sm font-light hover:text-stone-600 dark:hover:text-stone-400 transition-colors duration-300 relative group"
                   >
                     LinkedIn
+                    <span className="absolute -bottom-1 left-0 w-0 h-px bg-amber-600 group-hover:w-full transition-all duration-300"></span>
+                  </a>
+                  <a
+                    href="https://calendly.com/abie-marangoni/30min"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-light hover:text-stone-600 dark:hover:text-stone-400 transition-colors duration-300 relative group"
+                  >
+                    Calendly
                     <span className="absolute -bottom-1 left-0 w-0 h-px bg-amber-600 group-hover:w-full transition-all duration-300"></span>
                   </a>
                 </div>
@@ -816,14 +825,32 @@ export default function Portfolio() {
                   </p>
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-4 space-y-3">
                   <a
-                    href="mailto:marangonii.abril@gmail.com"
+                    href="mailto:abie.marangoni@gmail.com"
                     className="inline-flex items-center space-x-3 text-lg font-light hover:text-amber-600 transition-colors duration-300 group"
                   >
-                    <span>marangonii.abril@gmail.com</span>
+                    <span>abie.marangoni@gmail.com</span>
                     <ArrowUpRight className="h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
                   </a>
+                  <div className="flex space-x-6 text-sm font-light">
+                    <a
+                      href="https://calendly.com/abie-marangoni/30min"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-stone-500 hover:text-amber-600 transition-colors duration-300"
+                    >
+                      Calendly
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/abril-marangoni-49924327a"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-stone-500 hover:text-amber-600 transition-colors duration-300"
+                    >
+                      LinkedIn
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -845,7 +872,9 @@ export default function Portfolio() {
               <div className="flex items-center space-x-4">
                 <div className="w-8 h-px bg-stone-400 dark:bg-stone-600"></div>
                 <h2 className="text-sm font-light tracking-wider uppercase text-stone-600 dark:text-stone-400">
-                  Is your company the best? Prove it.
+                  Is your company the best?
+                  <br />
+                  Play the game and prove it.
                 </h2>
               </div>
             </div>
@@ -861,12 +890,22 @@ export default function Portfolio() {
           <div className="max-w-7xl mx-auto text-center">
             <div className="space-y-8">
               <h2 className="text-3xl lg:text-4xl font-light leading-tight">
-                {language === "en" ? "Had fun? Let's make it official." : "¿Te divertiste? Hagámoslo oficial."}
+                {language === "en" ? "Had fun?" : "¿Te divertiste?"}
               </h2>
               <p className="text-stone-600 dark:text-stone-400 font-light leading-relaxed max-w-xl mx-auto">
-                {language === "en"
-                  ? "Take a quick survey and tell me what you think about working together."
-                  : "Completa una breve encuesta y cuéntame qué piensas sobre trabajar juntos."}
+                {language === "en" ? (
+                  <>
+                    Take a quick survey and tell me what you think about working together.
+                    <br />
+                    IF YOU CAN ;)
+                  </>
+                ) : (
+                  <>
+                    Completa una breve encuesta y cuéntame qué piensas sobre trabajar juntos.
+                    <br />
+                    SI PUEDES ;)
+                  </>
+                )}
               </p>
               <Button
                 onClick={() => setIsSurveyOpen(true)}
@@ -894,6 +933,20 @@ export default function Portfolio() {
                   className="hover:text-stone-700 dark:hover:text-stone-300 transition-colors"
                 >
                   LinkedIn
+                </a>
+                <a
+                  href="https://calendly.com/abie-marangoni/30min"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-stone-700 dark:hover:text-stone-300 transition-colors"
+                >
+                  Calendly
+                </a>
+                <a
+                  href="mailto:abie.marangoni@gmail.com"
+                  className="hover:text-stone-700 dark:hover:text-stone-300 transition-colors"
+                >
+                  Gmail
                 </a>
                 <a href="#" className="hover:text-stone-700 dark:hover:text-stone-300 transition-colors">
                   Resume
