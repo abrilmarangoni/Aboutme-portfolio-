@@ -102,17 +102,20 @@ export default function AbaAiProject() {
         const progress = (scrollY - startScroll) / (endScroll - startScroll)
         const clampedProgress = Math.max(0, Math.min(1, progress))
 
-        // Update title based on scroll progress
-        if (clampedProgress < 0.5) {
+        // Update title based on scroll progress (3 slides)
+        if (clampedProgress < 0.33) {
           setHorizontalTitle("Our Mission")
-        } else {
+        } else if (clampedProgress < 0.66) {
           setHorizontalTitle("THE PROBLEM & THE OPPORTUNITY")
+        } else {
+          setHorizontalTitle("THE SOLUTION")
         }
 
-        // Calculate translate to move from slide 1 centered to slide 2 centered
-        // Each slide is 100vw (no spacer)
+        // Calculate translate to move through 3 slides (total movement = 2 * viewportWidth)
         const viewportWidth = window.innerWidth
-        const translateX = -clampedProgress * viewportWidth
+        const totalSlides = 3
+        const maxTranslate = (totalSlides - 1) * viewportWidth
+        const translateX = -clampedProgress * maxTranslate
 
         // Apply smooth transform
         requestAnimationFrame(() => {
@@ -124,10 +127,12 @@ export default function AbaAiProject() {
           track.style.transform = `translateX(0px)`
         })
       } else {
-        setHorizontalTitle("THE PROBLEM & THE OPPORTUNITY")
+        setHorizontalTitle("THE SOLUTION")
         const viewportWidth = window.innerWidth
+        const totalSlides = 3
+        const maxTranslate = (totalSlides - 1) * viewportWidth
         requestAnimationFrame(() => {
-          track.style.transform = `translateX(${-viewportWidth}px)`
+          track.style.transform = `translateX(${-maxTranslate}px)`
         })
       }
     }
@@ -239,8 +244,7 @@ export default function AbaAiProject() {
             <div className="space-y-8">
                 <h2 className="text-4xl md:text-5xl font-light">FULL STACK AI PROJECT</h2>
                 <p className="text-xl font-light leading-relaxed">
-                  An intelligent AI assistant that connects through OpenAI API and Meta platforms, 
-                  automatically responding to WhatsApp, Instagram, and Facebook messages.
+                  It's a SaaS conversational AI assistant platform that connects WhatsApp, Instagram, and Facebook through Meta Business API. It allows businesses to automate 24/7 customer service using OpenAI GPT-5.1, with a dashboard to manage products, services, and conversations from a single place.
                 </p>
                 <a
                   href="https://ab-aai-portfolio-9i71-rldhul616-marangoniiabril-9954s-projects.vercel.app"
@@ -260,11 +264,11 @@ export default function AbaAiProject() {
         {/* Horizontal Divider */}
         <div className="w-full h-px bg-white/20 my-32"></div>
 
-        {/* BLOCK 2 & 3 — Horizontal Scroll Section (Our Mission + The Problem & The Opportunity) */}
+        {/* BLOCK 2, 3 & 4 — Horizontal Scroll Section (Our Mission + The Problem & The Opportunity + The Solution) */}
         <section
           ref={horizontalSectionRef}
           className="relative"
-          style={{ height: "300vh" }}
+          style={{ height: "450vh" }}
         >
           <div className="sticky top-0 h-screen overflow-hidden">
             <div className="h-full flex items-center">
@@ -288,10 +292,10 @@ export default function AbaAiProject() {
                       </p>
                       <p>
                         We exist to empower businesses to scale their support, save time, and serve their customers better — with technology that feels simple, human, and truly helpful.
-                      </p>
+                        </p>
+                      </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
                 {/* Slide 2 — THE PROBLEM & THE OPPORTUNITY */}
                 <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
@@ -305,14 +309,40 @@ export default function AbaAiProject() {
                       </p>
                       <p>
                         The opportunity is straightforward: conversational AI can respond instantly, scale without hiring more staff, and give smaller businesses the power to compete with big companies. It turns every message into a potential sale, improves the customer experience, and frees teams to focus on what actually drives growth — all without increasing operational costs.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                {/* Slide 3 — THE SOLUTION */}
+                <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
+                  <div className="max-w-4xl w-full">
+                    <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
+                      THE SOLUTION
+                    </h2>
+                    <div className="space-y-6 text-xl font-light leading-relaxed">
+                      <p>
+                        ABA AI connects three key points in an integrated flow:
                       </p>
+                      <p className="text-2xl font-medium">
+                        Business → ABA AI → Customer
+                      </p>
+                      <p>
+                        The business configures products, services, schedules, and rules from an intuitive dashboard. It connects Meta Business with WhatsApp, Instagram, and Facebook. ABA AI integrates automatically and centralizes all conversations in one place.
+                      </p>
+                      <p>
+                        ABA AI uses OpenAI GPT-5.1 to understand the context of each conversation. It processes with NLU, analyzes the business context, and generates natural, precise responses. All with encryption and security validation.
+                      </p>
+                      <p>
+                        The customer receives instant responses on WhatsApp, Instagram, or Facebook. ABA AI handles inquiries, schedules appointments with Calendly, and maintains active conversations 24/7. The customer always gets a quick and accurate response.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
         {/* Horizontal Divider */}
         <div className="w-full h-px bg-white/20 my-32"></div>
