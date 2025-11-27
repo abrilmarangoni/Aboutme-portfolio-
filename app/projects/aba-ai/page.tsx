@@ -8,8 +8,16 @@ import { Button } from "@/components/ui/button"
 
 export default function AbaAiProject() {
   const [language, setLanguage] = useState<"en" | "es">("en")
-  const [darkMode, setDarkMode] = useState(false)
   const [horizontalTitle, setHorizontalTitle] = useState("Our Mission")
+
+  // Initialize horizontal title based on language
+  useEffect(() => {
+    const translations = {
+      en: { mission: "Our Mission" },
+      es: { mission: "Nuestra Misión" }
+    }
+    setHorizontalTitle(translations[language].mission)
+  }, [language])
   const [hoveredTechCard, setHoveredTechCard] = useState<number | null>(null)
   const horizontalSectionRef = useRef<HTMLElement>(null)
   const horizontalTrackRef = useRef<HTMLDivElement>(null)
@@ -17,16 +25,22 @@ export default function AbaAiProject() {
   const flowNodeRef = useRef<HTMLDivElement>(null)
   const flowContainerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem("darkMode") === "true"
-    setDarkMode(savedDarkMode)
-    if (savedDarkMode) {
-      document.documentElement.classList.add("dark")
-    }
-  }, [])
-
   // Horizontal scroll effect for "THE PROBLEM & THE OPPORTUNITY" section
   useEffect(() => {
+    const translations = {
+      en: {
+        mission: "Our Mission",
+        problem: "THE PROBLEM & THE OPPORTUNITY",
+        solution: "THE SOLUTION"
+      },
+      es: {
+        mission: "Nuestra Misión",
+        problem: "EL PROBLEMA & LA OPORTUNIDAD",
+        solution: "LA SOLUCIÓN"
+      }
+    }
+    const t = translations[language]
+
     const handleScroll = () => {
       if (!horizontalSectionRef.current || !horizontalTrackRef.current) return
 
@@ -48,11 +62,11 @@ export default function AbaAiProject() {
 
         // Update title based on scroll progress (3 slides)
         if (clampedProgress < 0.33) {
-          setHorizontalTitle("Our Mission")
+          setHorizontalTitle(t.mission)
         } else if (clampedProgress < 0.66) {
-          setHorizontalTitle("THE PROBLEM & THE OPPORTUNITY")
+          setHorizontalTitle(t.problem)
         } else {
-          setHorizontalTitle("THE SOLUTION")
+          setHorizontalTitle(t.solution)
         }
 
         // Calculate translate to move through 3 slides (total movement = 2 * viewportWidth)
@@ -66,12 +80,12 @@ export default function AbaAiProject() {
           track.style.transform = `translateX(${translateX}px)`
         })
       } else if (scrollY < startScroll) {
-        setHorizontalTitle("Our Mission")
+        setHorizontalTitle(t.mission)
         requestAnimationFrame(() => {
           track.style.transform = `translateX(0px)`
         })
       } else {
-        setHorizontalTitle("THE SOLUTION")
+        setHorizontalTitle(t.solution)
         const viewportWidth = window.innerWidth
         const totalSlides = 3
         const maxTranslate = (totalSlides - 1) * viewportWidth
@@ -85,7 +99,7 @@ export default function AbaAiProject() {
     handleScroll() // Initial check
 
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [language])
 
 
   // Animate flow node
@@ -195,17 +209,6 @@ export default function AbaAiProject() {
     }
   }, [language]) // Re-run when language changes
 
-  const toggleDarkMode = () => {
-    const newDarkMode = !darkMode
-    setDarkMode(newDarkMode)
-    localStorage.setItem("darkMode", newDarkMode.toString())
-    if (newDarkMode) {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-  }
-
   const toggleLanguage = () => {
     const newLanguage = language === "en" ? "es" : "en"
     setLanguage(newLanguage)
@@ -213,16 +216,24 @@ export default function AbaAiProject() {
 
   const translations = {
     en: {
+      backToPortfolio: "Back to Portfolio",
+      projectTitle: "ABA IA PROJECT",
+      heroDescription: "It's a SaaS conversational AI assistant platform that connects WhatsApp, Instagram, and Facebook through Meta Business API. It allows businesses to automate 24/7 customer service using OpenAI GPT-5.1, with a dashboard to manage products, services, and conversations from a single place.",
+      missionTitle: "Our Mission",
+      missionParagraph1: "At ABA AI, we believe every business — no matter its size — deserves world-class customer support, available 24/7. Our mission is to make advanced conversational AI accessible, intuitive, and affordable for everyone.",
+      missionParagraph2: "We're here to remove the technical and financial barriers that kept small and growing businesses out of the AI revolution. With ABA AI, any business can set up a powerful, context-aware assistant in minutes and deliver instant, human-like responses on WhatsApp, Instagram, and Facebook.",
+      missionParagraph3: "We exist to empower businesses to scale their support, save time, and serve their customers better — with technology that feels simple, human, and truly helpful.",
+      problemOpportunityTitle: "THE PROBLEM & THE OPPORTUNITY",
+      problemOpportunityParagraph1: "Small and medium businesses lose customers and sales every day simply because they can't reply fast enough on WhatsApp, Instagram, or Facebook. They can't offer 24/7 support without raising fixed costs, and enterprise-level AI tools are too expensive and too complex. Every unanswered message becomes lost revenue — and a customer who goes to the competition.",
+      problemOpportunityParagraph2: "The opportunity is straightforward: conversational AI can respond instantly, scale without hiring more staff, and give smaller businesses the power to compete with big companies. It turns every message into a potential sale, improves the customer experience, and frees teams to focus on what actually drives growth — all without increasing operational costs.",
+      solutionTitle: "THE SOLUTION",
+      solutionParagraph1: "ABA AI connects three key points in an integrated flow:",
+      solutionParagraph2: "Business → ABA AI → Customer",
+      solutionParagraph3: "The business configures products, services, schedules, and rules from an intuitive dashboard. It connects Meta Business with WhatsApp, Instagram, and Facebook. ABA AI integrates automatically and centralizes all conversations in one place.",
+      solutionParagraph4: "ABA AI uses OpenAI GPT-5.1 to understand the context of each conversation. It processes with NLU, analyzes the business context, and generates natural, precise responses. All with encryption and security validation.",
+      solutionParagraph5: "The customer receives instant responses on WhatsApp, Instagram, or Facebook. ABA AI handles inquiries, schedules appointments with Calendly, and maintains active conversations 24/7. The customer always gets a quick and accurate response.",
+      techStackTitle: "TECH STACK",
       architectureFlow: "ARCHITECTURE & FLOW",
-      architecture: "Architecture",
-      monorepo: "Monorepo",
-      monorepoDesc: "Frontend and backend separated",
-      restApi: "REST API",
-      restApiDesc: "Backend with NestJS",
-      multiTenant: "Multi-tenant",
-      multiTenantDesc: "Each user has their own tenant/business",
-      webhooks: "Webhooks",
-      webhooksDesc: "Integration with Meta and Stripe",
       conversationFlow: "Conversation Flow",
       step1: "Client sends message via WhatsApp/Instagram/Facebook",
       step2: "Meta webhook receives the message",
@@ -232,18 +243,73 @@ export default function AbaAiProject() {
       step6: "OpenAI GPT-5.1 generates contextualized response",
       step7: "Backend sends response to client via Meta API",
       step8: "Token usage and metrics are recorded",
+      designSystemTitle: "DESIGN SYSTEM",
+      colorPalette: "Color Palette",
+      primaryColors: "Primary Colors",
+      black: "Black",
+      white: "White",
+      orangeAccent: "Orange Accent",
+      grayScale: "Gray Scale",
+      transparenciesOverlays: "Transparencies & Overlays",
+      header: "Header",
+      cards: "Cards",
+      borders: "Borders",
+      dividers: "Dividers",
+      hover: "Hover",
+      typography: "Typography",
+      hierarchy: "Hierarchy",
+      spacingLayout: "Spacing & Layout",
+      containers: "Containers",
+      padding: "Padding",
+      gaps: "Gaps",
+      designPrinciples: "Design Principles",
+      fullStackSaaS: "Full-Stack SaaS Platform",
+      builtBy: "built and design by abi marangoni",
+      primary: "Primary",
+      displayTitle: "Display Title",
+      sectionTitle: "Section Title",
+      subtitle: "Subtitle",
+      bodyText: "Body text for paragraphs and longer content. This is how regular text appears throughout the interface.",
+      label: "Label",
+      mainContent: "Main content",
+      textContent: "Text content",
+      wideContent: "Wide content",
+      horizontalPadding: "Horizontal padding",
+      topSpacing: "Top spacing from header",
+      sectionSpacing: "Section spacing",
+      splitLayouts: "Split layouts",
+      cardSpacing: "Card spacing",
+      gridSpacing: "Grid spacing",
+      minimalism: "Minimalism",
+      minimalismDesc: "Clean interface, generous spacing, light typography",
+      consistency: "Consistency",
+      consistencyDesc: "Uniform spacing, consistent colors and typography",
+      elegance: "Elegance",
+      eleganceDesc: "Smooth animations, subtle effects, refined palette",
+      accessibility: "Accessibility",
+      accessibilityDesc: "Adequate contrast, readable sizes, clear hover states",
+      privacy: "Privacy",
+      cookies: "Cookies",
     },
     es: {
+      backToPortfolio: "Volver al Portfolio",
+      projectTitle: "PROYECTO ABA IA",
+      heroDescription: "Es una plataforma SaaS de asistente de IA conversacional que conecta WhatsApp, Instagram y Facebook a través de Meta Business API. Permite a empresas automatizar atención al cliente 24/7 usando OpenAI GPT-5.1, con un dashboard para gestionar productos, servicios y conversaciones desde un solo lugar.",
+      missionTitle: "Nuestra Misión",
+      missionParagraph1: "En ABA AI, creemos que cada negocio — sin importar su tamaño — merece atención al cliente de clase mundial, disponible 24/7. Nuestra misión es hacer que la IA conversacional avanzada sea accesible, intuitiva y asequible para todos.",
+      missionParagraph2: "Estamos aquí para eliminar las barreras técnicas y financieras que mantuvieron a las pequeñas y medianas empresas fuera de la revolución de la IA. Con ABA AI, cualquier negocio puede configurar un asistente potente y consciente del contexto en minutos y entregar respuestas instantáneas y humanas en WhatsApp, Instagram y Facebook.",
+      missionParagraph3: "Existimos para empoderar a las empresas a escalar su soporte, ahorrar tiempo y servir mejor a sus clientes — con tecnología que se siente simple, humana y verdaderamente útil.",
+      problemOpportunityTitle: "EL PROBLEMA & LA OPORTUNIDAD",
+      problemOpportunityParagraph1: "Las pequeñas y medianas empresas pierden clientes y ventas todos los días simplemente porque no pueden responder lo suficientemente rápido en WhatsApp, Instagram o Facebook. No pueden ofrecer soporte 24/7 sin aumentar los costos fijos, y las herramientas de IA de nivel empresarial son demasiado caras y complejas. Cada mensaje sin respuesta se convierte en ingresos perdidos — y un cliente que se va a la competencia.",
+      problemOpportunityParagraph2: "La oportunidad es clara: la IA conversacional puede responder instantáneamente, escalar sin contratar más personal y dar a las empresas más pequeñas el poder de competir con las grandes empresas. Convierte cada mensaje en una venta potencial, mejora la experiencia del cliente y libera a los equipos para enfocarse en lo que realmente impulsa el crecimiento — todo sin aumentar los costos operativos.",
+      solutionTitle: "LA SOLUCIÓN",
+      solutionParagraph1: "ABA AI conecta tres puntos clave en un flujo integrado:",
+      solutionParagraph2: "Negocio → ABA AI → Cliente",
+      solutionParagraph3: "El negocio configura productos, servicios, horarios y reglas desde un dashboard intuitivo. Conecta Meta Business con WhatsApp, Instagram y Facebook. ABA AI se integra automáticamente y centraliza todas las conversaciones en un solo lugar.",
+      solutionParagraph4: "ABA AI utiliza OpenAI GPT-5.1 para entender el contexto de cada conversación. Procesa con NLU, analiza el contexto del negocio y genera respuestas naturales y precisas. Todo con encriptación y validación de seguridad.",
+      solutionParagraph5: "El cliente recibe respuestas instantáneas en WhatsApp, Instagram o Facebook. ABA AI maneja consultas, organiza citas con Calendly y mantiene conversaciones activas 24/7. El cliente siempre obtiene una respuesta rápida y precisa.",
+      techStackTitle: "STACK TECNOLÓGICO",
       architectureFlow: "ARQUITECTURA & FLUJO",
-      architecture: "Arquitectura",
-      monorepo: "Monorepo",
-      monorepoDesc: "Frontend y backend separados",
-      restApi: "REST API",
-      restApiDesc: "Backend con NestJS",
-      multiTenant: "Multi-tenant",
-      multiTenantDesc: "Cada usuario tiene su propio tenant/negocio",
-      webhooks: "Webhooks",
-      webhooksDesc: "Integración con Meta y Stripe",
       conversationFlow: "Flujo de Conversación",
       step1: "Cliente envía mensaje por WhatsApp/Instagram/Facebook",
       step2: "Webhook de Meta recibe el mensaje",
@@ -253,6 +319,53 @@ export default function AbaAiProject() {
       step6: "OpenAI GPT-5.1 genera respuesta contextualizada",
       step7: "Backend envía respuesta al cliente vía Meta API",
       step8: "Se registra el uso de tokens y métricas",
+      designSystemTitle: "SISTEMA DE DISEÑO",
+      colorPalette: "Paleta de Colores",
+      primaryColors: "Colores Primarios",
+      black: "Negro",
+      white: "Blanco",
+      orangeAccent: "Acento Naranja",
+      grayScale: "Escala de Grises",
+      transparenciesOverlays: "Transparencias y Overlays",
+      header: "Header",
+      cards: "Tarjetas",
+      borders: "Bordes",
+      dividers: "Divisores",
+      hover: "Hover",
+      typography: "Tipografía",
+      hierarchy: "Jerarquía",
+      spacingLayout: "Espaciado y Diseño",
+      containers: "Contenedores",
+      padding: "Padding",
+      gaps: "Espacios",
+      designPrinciples: "Principios de Diseño",
+      fullStackSaaS: "Plataforma SaaS Full-Stack",
+      builtBy: "construido y diseñado por abi marangoni",
+      primary: "Primarios",
+      displayTitle: "Título Principal",
+      sectionTitle: "Título de Sección",
+      subtitle: "Subtítulo",
+      bodyText: "Texto de cuerpo para párrafos y contenido largo. Así aparece el texto regular en toda la interfaz.",
+      label: "Etiqueta",
+      mainContent: "Contenido principal",
+      textContent: "Contenido de texto",
+      wideContent: "Contenido amplio",
+      horizontalPadding: "Padding horizontal",
+      topSpacing: "Espaciado superior desde header",
+      sectionSpacing: "Espaciado de sección",
+      splitLayouts: "Layouts divididos",
+      cardSpacing: "Espaciado de tarjetas",
+      gridSpacing: "Espaciado de grid",
+      minimalism: "Minimalismo",
+      minimalismDesc: "Interfaz limpia, espaciado generoso, tipografía ligera",
+      consistency: "Consistencia",
+      consistencyDesc: "Espaciado uniforme, colores y tipografía consistentes",
+      elegance: "Elegancia",
+      eleganceDesc: "Animaciones suaves, efectos sutiles, paleta refinada",
+      accessibility: "Accesibilidad",
+      accessibilityDesc: "Contraste adecuado, tamaños legibles, estados hover claros",
+      privacy: "Privacidad",
+      cookies: "Cookies",
     },
   }
 
@@ -280,18 +393,17 @@ export default function AbaAiProject() {
               className="flex items-center space-x-2 text-sm font-light hover:text-white/60 transition-colors duration-300 relative group"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>{language === "en" ? "Back to Portfolio" : "Volver al Portfolio"}</span>
+              <span>{translations[language].backToPortfolio}</span>
               <span className="absolute -bottom-1 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300"></span>
             </Link>
 
             {/* Center: ABA IA PROJECT */}
             <div className="text-sm font-light tracking-wider absolute left-1/2 transform -translate-x-1/2">
-              ABA IA PROJECT
+              {translations[language].projectTitle}
             </div>
 
-            {/* Right: Toggles */}
-            <div className="flex items-center space-x-8">
-              {/* Language Toggle */}
+            {/* Right: Language Toggle */}
+            <div className="flex items-center">
               <Button
                 variant="ghost"
                 size="sm"
@@ -301,15 +413,6 @@ export default function AbaAiProject() {
                 <Globe className="h-3 w-3" />
                 <span className="text-xs font-light">{language.toUpperCase()}</span>
               </Button>
-
-              {/* Dark Mode Toggle */}
-              <button
-                onClick={toggleDarkMode}
-                className="p-2 hover:bg-white/10 transition-colors duration-300 rounded-md"
-                aria-label="Toggle dark mode"
-              >
-                {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </button>
             </div>
           </div>
         </div>
@@ -326,7 +429,7 @@ export default function AbaAiProject() {
             <div className="space-y-8">
                 <h2 className="text-4xl md:text-5xl font-thin">ABA IA</h2>
                 <p className="text-xl font-light leading-relaxed">
-                  It's a SaaS conversational AI assistant platform that connects WhatsApp, Instagram, and Facebook through Meta Business API. It allows businesses to automate 24/7 customer service using OpenAI GPT-5.1, with a dashboard to manage products, services, and conversations from a single place.
+                  {t.heroDescription}
                 </p>
               </div>
                 </div>
@@ -364,8 +467,8 @@ export default function AbaAiProject() {
           <div className="max-w-7xl mx-auto text-center w-full px-8 md:px-16" style={{ marginTop: 'calc(24px - 80px)' }}>
             <div className="max-w-4xl mx-auto">
               <div className="space-y-2">
-                <p className="text-sm font-light text-white/60">Full-Stack SaaS Platform</p>
-                <p className="text-sm font-light text-white/60">built and design by abi marangoni</p>
+                <p className="text-sm font-light text-white/60">{t.fullStackSaaS}</p>
+                <p className="text-sm font-light text-white/60">{t.builtBy}</p>
                 <p className="text-sm font-light text-white/60">2025</p>
                 </div>
               </div>
@@ -392,35 +495,25 @@ export default function AbaAiProject() {
                 <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
                   <div className="max-w-4xl w-full">
                     <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
-                      Our Mission
+                      {t.missionTitle}
                     </h2>
                     <div className="space-y-6 text-xl font-light leading-relaxed">
-                      <p>
-                        At ABA AI, we believe every business — no matter its size — deserves world-class customer support, available 24/7. Our mission is to make advanced conversational AI accessible, intuitive, and affordable for everyone.
-                      </p>
-                      <p>
-                        We're here to remove the technical and financial barriers that kept small and growing businesses out of the AI revolution. With ABA AI, any business can set up a powerful, context-aware assistant in minutes and deliver instant, human-like responses on WhatsApp, Instagram, and Facebook.
-                      </p>
-                      <p>
-                        We exist to empower businesses to scale their support, save time, and serve their customers better — with technology that feels simple, human, and truly helpful.
-                        </p>
+                      <p>{t.missionParagraph1}</p>
+                      <p>{t.missionParagraph2}</p>
+                      <p>{t.missionParagraph3}</p>
+                        </div>
                       </div>
                 </div>
-              </div>
 
                 {/* Slide 2 — THE PROBLEM & THE OPPORTUNITY */}
                 <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
                   <div className="max-w-4xl w-full">
                     <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
-                      THE PROBLEM & THE OPPORTUNITY
+                      {t.problemOpportunityTitle}
                     </h2>
                     <div className="space-y-6 text-xl font-light leading-relaxed">
-                      <p>
-                        Small and medium businesses lose customers and sales every day simply because they can't reply fast enough on WhatsApp, Instagram, or Facebook. They can't offer 24/7 support without raising fixed costs, and enterprise-level AI tools are too expensive and too complex. Every unanswered message becomes lost revenue — and a customer who goes to the competition.
-                      </p>
-                      <p>
-                        The opportunity is straightforward: conversational AI can respond instantly, scale without hiring more staff, and give smaller businesses the power to compete with big companies. It turns every message into a potential sale, improves the customer experience, and frees teams to focus on what actually drives growth — all without increasing operational costs.
-                        </p>
+                      <p>{t.problemOpportunityParagraph1}</p>
+                      <p>{t.problemOpportunityParagraph2}</p>
                   </div>
                       </div>
                     </div>
@@ -429,24 +522,14 @@ export default function AbaAiProject() {
                 <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
                   <div className="max-w-4xl w-full">
                     <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
-                      THE SOLUTION
+                      {t.solutionTitle}
                     </h2>
                     <div className="space-y-6 text-xl font-light leading-relaxed">
-                      <p>
-                        ABA AI connects three key points in an integrated flow:
-                      </p>
-                      <p className="text-2xl font-medium">
-                        Business → ABA AI → Customer
-                      </p>
-                      <p>
-                        The business configures products, services, schedules, and rules from an intuitive dashboard. It connects Meta Business with WhatsApp, Instagram, and Facebook. ABA AI integrates automatically and centralizes all conversations in one place.
-                      </p>
-                      <p>
-                        ABA AI uses OpenAI GPT-5.1 to understand the context of each conversation. It processes with NLU, analyzes the business context, and generates natural, precise responses. All with encryption and security validation.
-                      </p>
-                      <p>
-                        The customer receives instant responses on WhatsApp, Instagram, or Facebook. ABA AI handles inquiries, schedules appointments with Calendly, and maintains active conversations 24/7. The customer always gets a quick and accurate response.
-                        </p>
+                      <p>{t.solutionParagraph1}</p>
+                      <p className="text-2xl font-medium">{t.solutionParagraph2}</p>
+                      <p>{t.solutionParagraph3}</p>
+                      <p>{t.solutionParagraph4}</p>
+                      <p>{t.solutionParagraph5}</p>
                   </div>
                 </div>
                     </div>
@@ -461,7 +544,7 @@ export default function AbaAiProject() {
         {/* BLOCK 5 — Tech Stack */}
         <section className="px-8 md:px-16 py-32 max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
-            TECH STACK
+            {t.techStackTitle}
                     </h2>
           <div 
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -586,7 +669,7 @@ export default function AbaAiProject() {
         {/* BLOCK 6 — Architecture Flow */}
         <section className="px-8 md:px-16 py-32 max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
-            ARCHITECTURE FLOW
+            {t.architectureFlow}
                     </h2>
           <div ref={flowContainerRef} className="relative max-w-2xl">
             {/* Vertical line - white */}
@@ -655,35 +738,35 @@ export default function AbaAiProject() {
         {/* BLOCK 7 — Design System */}
         <section className="px-8 md:px-16 py-32 max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-20">
-            DESIGN SYSTEM
+            {t.designSystemTitle}
                     </h2>
 
           {/* Color Palette */}
           <div className="mb-24">
-            <h3 className="text-xl font-light tracking-wider uppercase mb-12">Color Palette</h3>
+            <h3 className="text-xl font-light tracking-wider uppercase mb-12">{t.colorPalette}</h3>
             
             {/* Primary Colors */}
             <div className="mb-12 border border-white/20 p-8">
-              <h4 className="text-sm font-light uppercase mb-6 text-white/60">Primary</h4>
+              <h4 className="text-sm font-light uppercase mb-6 text-white/60">{t.primaryColors}</h4>
               <div className="flex gap-0">
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-24 bg-black border-2 border-white/30"></div>
                     <div className="py-3">
-                      <p className="text-sm font-light">Black</p>
+                      <p className="text-sm font-light">{t.black}</p>
                       <p className="text-xs text-white/40">#000000</p>
                     </div>
                   </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-24 bg-white"></div>
                     <div className="py-3">
-                      <p className="text-sm font-light">White</p>
+                      <p className="text-sm font-light">{t.white}</p>
                       <p className="text-xs text-white/40">#FFFFFF</p>
                     </div>
                   </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-24 border-l border-white/10" style={{ backgroundColor: '#D94A00' }}></div>
                     <div className="py-3">
-                      <p className="text-sm font-light">Orange Accent</p>
+                      <p className="text-sm font-light">{t.orangeAccent}</p>
                       <p className="text-xs text-white/40">#D94A00</p>
                     </div>
                   </div>
@@ -692,7 +775,7 @@ export default function AbaAiProject() {
 
             {/* Gray Scale */}
             <div className="mb-12 border border-white/20 p-8">
-              <h4 className="text-sm font-light uppercase mb-6 text-white/60">Gray Scale</h4>
+              <h4 className="text-sm font-light uppercase mb-6 text-white/60">{t.grayScale}</h4>
               <div className="flex gap-0">
                   <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
                     <div className="h-20 bg-white"></div>
@@ -759,41 +842,41 @@ export default function AbaAiProject() {
 
             {/* Transparencies */}
             <div className="border border-white/20 p-8">
-              <h4 className="text-sm font-light uppercase mb-6 text-white/60">Transparencies & Overlays</h4>
+              <h4 className="text-sm font-light uppercase mb-6 text-white/60">{t.transparenciesOverlays}</h4>
               <div className="flex gap-0">
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-20 bg-black/95 backdrop-blur-sm"></div>
                     <div className="py-3 px-2">
                       <p className="text-xs font-light">black/95</p>
-                      <p className="text-[10px] text-white/40">Header</p>
+                      <p className="text-[10px] text-white/40">{t.header}</p>
                   </div>
                 </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-20 bg-black/50"></div>
                     <div className="py-3 px-2">
                       <p className="text-xs font-light">black/50</p>
-                      <p className="text-[10px] text-white/40">Cards</p>
+                      <p className="text-[10px] text-white/40">{t.cards}</p>
                           </div>
                           </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-20 bg-white/20"></div>
                     <div className="py-3 px-2">
                       <p className="text-xs font-light">white/20</p>
-                      <p className="text-[10px] text-white/40">Borders</p>
+                      <p className="text-[10px] text-white/40">{t.borders}</p>
                         </div>
                           </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-20 bg-white/10"></div>
                     <div className="py-3 px-2">
                       <p className="text-xs font-light">white/10</p>
-                      <p className="text-[10px] text-white/40">Dividers</p>
+                      <p className="text-[10px] text-white/40">{t.dividers}</p>
                           </div>
                         </div>
                   <div className="group flex-1 hover:flex-[2] transition-all duration-500">
                     <div className="h-20 bg-white/5"></div>
                     <div className="py-3 px-2">
                       <p className="text-xs font-light">white/5</p>
-                      <p className="text-[10px] text-white/40">Hover</p>
+                      <p className="text-[10px] text-white/40">{t.hover}</p>
                       </div>
                         </div>
                       </div>
@@ -802,28 +885,28 @@ export default function AbaAiProject() {
 
           {/* Typography */}
           <div className="mb-24">
-            <h3 className="text-xl font-light tracking-wider uppercase mb-8">Typography</h3>
+            <h3 className="text-xl font-light tracking-wider uppercase mb-8">{t.typography}</h3>
             <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300">
-              <h4 className="text-sm font-light uppercase mb-8 text-white/60">Hierarchy</h4>
+              <h4 className="text-sm font-light uppercase mb-8 text-white/60">{t.hierarchy}</h4>
                   <div className="space-y-8">
                         <div>
-                  <p className="text-5xl lg:text-6xl font-light text-white mb-3 leading-tight">Display Title</p>
+                  <p className="text-5xl lg:text-6xl font-light text-white mb-3 leading-tight">{t.displayTitle}</p>
                   <p className="text-xs text-white/40 font-mono">text-5xl lg:text-6xl, font-light, leading-tight</p>
                     </div>
                         <div>
-                  <p className="text-4xl lg:text-5xl font-light text-white mb-3 leading-tight">Section Title</p>
+                  <p className="text-4xl lg:text-5xl font-light text-white mb-3 leading-tight">{t.sectionTitle}</p>
                   <p className="text-xs text-white/40 font-mono">text-4xl lg:text-5xl, font-light, leading-tight</p>
                         </div>
                         <div>
-                  <p className="text-2xl lg:text-3xl font-light text-white/80 mb-3 leading-relaxed">Subtitle</p>
+                  <p className="text-2xl lg:text-3xl font-light text-white/80 mb-3 leading-relaxed">{t.subtitle}</p>
                   <p className="text-xs text-white/40 font-mono">text-2xl lg:text-3xl, font-light, leading-relaxed</p>
                         </div>
                         <div>
-                  <p className="text-base lg:text-lg font-light text-white/60 mb-3 leading-relaxed">Body text for paragraphs and longer content. This is how regular text appears throughout the interface.</p>
+                  <p className="text-base lg:text-lg font-light text-white/60 mb-3 leading-relaxed">{t.bodyText}</p>
                   <p className="text-xs text-white/40 font-mono">text-base lg:text-lg, font-light, leading-relaxed</p>
                         </div>
                         <div>
-                  <p className="text-sm font-light text-white/40 mb-3">Label</p>
+                  <p className="text-sm font-light text-white/40 mb-3">{t.label}</p>
                   <p className="text-xs text-white/40 font-mono">text-sm, font-light</p>
                         </div>
                 </div>
@@ -832,56 +915,56 @@ export default function AbaAiProject() {
 
           {/* Spacing & Layout */}
           <div className="mb-24">
-            <h3 className="text-xl font-light tracking-wider uppercase mb-8">Spacing & Layout</h3>
+            <h3 className="text-xl font-light tracking-wider uppercase mb-8">{t.spacingLayout}</h3>
             <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div>
-                  <h4 className="text-sm font-light uppercase mb-4 text-white/60">Containers</h4>
+                  <h4 className="text-sm font-light uppercase mb-4 text-white/60">{t.containers}</h4>
                   <div className="space-y-3 text-sm font-light text-white/80">
                         <div>
-                      <p className="text-white mb-1">Main content</p>
+                      <p className="text-white mb-1">{t.mainContent}</p>
                       <p className="text-xs text-white/40 font-mono">max-w-7xl (1280px)</p>
                         </div>
                         <div>
-                      <p className="text-white mb-1">Text content</p>
+                      <p className="text-white mb-1">{t.textContent}</p>
                       <p className="text-xs text-white/40 font-mono">max-w-4xl (896px)</p>
                         </div>
                         <div>
-                      <p className="text-white mb-1">Wide content</p>
+                      <p className="text-white mb-1">{t.wideContent}</p>
                       <p className="text-xs text-white/40 font-mono">max-w-6xl (1152px)</p>
                         </div>
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-sm font-light uppercase mb-4 text-white/60">Padding</h4>
+                  <h4 className="text-sm font-light uppercase mb-4 text-white/60">{t.padding}</h4>
                   <div className="space-y-3 text-sm font-light text-white/80">
                     <div>
-                      <p className="text-white mb-1">Horizontal padding</p>
+                      <p className="text-white mb-1">{t.horizontalPadding}</p>
                       <p className="text-xs text-white/40 font-mono">px-4 sm:px-6 lg:px-8</p>
               </div>
                     <div>
-                      <p className="text-white mb-1">Top spacing from header</p>
+                      <p className="text-white mb-1">{t.topSpacing}</p>
                       <p className="text-xs text-white/40 font-mono">pt-[120px]</p>
             </div>
                     <div>
-                      <p className="text-white mb-1">Section spacing</p>
+                      <p className="text-white mb-1">{t.sectionSpacing}</p>
                       <p className="text-xs text-white/40 font-mono">mb-20 / mb-24</p>
                   </div>
                 </div>
                   </div>
                 <div>
-                  <h4 className="text-sm font-light uppercase mb-4 text-white/60">Gaps</h4>
+                  <h4 className="text-sm font-light uppercase mb-4 text-white/60">{t.gaps}</h4>
                   <div className="space-y-3 text-sm font-light text-white/80">
                     <div>
-                      <p className="text-white mb-1">Split layouts</p>
+                      <p className="text-white mb-1">{t.splitLayouts}</p>
                       <p className="text-xs text-white/40 font-mono">gap-[76px]</p>
                   </div>
                     <div>
-                      <p className="text-white mb-1">Card spacing</p>
+                      <p className="text-white mb-1">{t.cardSpacing}</p>
                       <p className="text-xs text-white/40 font-mono">gap-8</p>
                 </div>
                     <div>
-                      <p className="text-white mb-1">Grid spacing</p>
+                      <p className="text-white mb-1">{t.gridSpacing}</p>
                       <p className="text-xs text-white/40 font-mono">gap-6</p>
                   </div>
                   </div>
@@ -892,23 +975,23 @@ export default function AbaAiProject() {
 
           {/* Design Principles */}
           <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300">
-            <h3 className="text-xl font-light tracking-wider uppercase mb-6">Design Principles</h3>
+            <h3 className="text-xl font-light tracking-wider uppercase mb-6">{t.designPrinciples}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm font-light text-white/80">
                         <div>
-                <p className="text-white mb-2">Minimalism</p>
-                <p className="text-white/60">Clean interface, generous spacing, light typography</p>
+                <p className="text-white mb-2">{t.minimalism}</p>
+                <p className="text-white/60">{t.minimalismDesc}</p>
                   </div>
                         <div>
-                <p className="text-white mb-2">Consistency</p>
-                <p className="text-white/60">Uniform spacing, consistent colors and typography</p>
+                <p className="text-white mb-2">{t.consistency}</p>
+                <p className="text-white/60">{t.consistencyDesc}</p>
                 </div>
                         <div>
-                <p className="text-white mb-2">Elegance</p>
-                <p className="text-white/60">Smooth animations, subtle effects, refined palette</p>
+                <p className="text-white mb-2">{t.elegance}</p>
+                <p className="text-white/60">{t.eleganceDesc}</p>
                       </div>
                         <div>
-                <p className="text-white mb-2">Accessibility</p>
-                <p className="text-white/60">Adequate contrast, readable sizes, clear hover states</p>
+                <p className="text-white mb-2">{t.accessibility}</p>
+                <p className="text-white/60">{t.accessibilityDesc}</p>
                 </div>
               </div>
             </div>

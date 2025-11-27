@@ -2,32 +2,15 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowLeft, Globe, Sun, Moon, Copy, Check } from "lucide-react"
+import { ArrowLeft, Globe, Copy, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function CodePage() {
   const [language, setLanguage] = useState<"en" | "es">("en")
-  const [darkMode, setDarkMode] = useState(true)
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
-
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem("darkMode") === "true"
-    setDarkMode(savedDarkMode)
-  }, [])
 
   const toggleLanguage = () => {
     setLanguage(language === "en" ? "es" : "en")
-  }
-
-  const toggleDarkMode = () => {
-    const newDarkMode = !darkMode
-    setDarkMode(newDarkMode)
-    localStorage.setItem("darkMode", String(newDarkMode))
-    if (newDarkMode) {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
   }
 
   const copyToClipboard = (code: string, index: number) => {
@@ -806,13 +789,6 @@ volumes:
                 <Globe className="h-3 w-3" />
                 <span className="text-xs font-light">{language.toUpperCase()}</span>
               </Button>
-              <button
-                onClick={toggleDarkMode}
-                className="p-2 hover:bg-white/10 transition-colors duration-300 rounded-md"
-                aria-label="Toggle dark mode"
-              >
-                {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </button>
             </div>
           </div>
         </div>
