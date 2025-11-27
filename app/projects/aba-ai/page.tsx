@@ -292,10 +292,10 @@ export default function AbaAiProject() {
                       </p>
                       <p>
                         We exist to empower businesses to scale their support, save time, and serve their customers better — with technology that feels simple, human, and truly helpful.
-                        </p>
-                      </div>
-                      </div>
-                    </div>
+              </p>
+            </div>
+                </div>
+                </div>
 
                 {/* Slide 2 — THE PROBLEM & THE OPPORTUNITY */}
                 <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
@@ -311,8 +311,8 @@ export default function AbaAiProject() {
                         The opportunity is straightforward: conversational AI can respond instantly, scale without hiring more staff, and give smaller businesses the power to compete with big companies. It turns every message into a potential sale, improves the customer experience, and frees teams to focus on what actually drives growth — all without increasing operational costs.
                         </p>
                       </div>
-                    </div>
-                  </div>
+                </div>
+              </div>
 
                 {/* Slide 3 — THE SOLUTION */}
                 <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
@@ -347,94 +347,331 @@ export default function AbaAiProject() {
         {/* Horizontal Divider */}
         <div className="w-full h-px bg-white/20 my-32"></div>
 
-        {/* BLOCK 5 — Story Section */}
+        {/* BLOCK 5 — Tech Stack */}
         <section className="px-8 md:px-16 py-32 max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-16">
-            The Intelligence That Connects Us
+            TECH STACK
                     </h2>
-          <div className="space-y-8 text-xl font-light leading-relaxed max-w-4xl">
-            <p>
-              ABA AI is a one-of-its-kind platform that bridges artificial intelligence and human communication. 
-              It shifts into focus how AI can serve businesses of all sizes, connecting them with their customers 
-              through the platforms they already use every day.
-            </p>
-            <p>
-              The system transports the message of intelligent automation to a global audience, 
-              welcoming businesses from e-commerce to gastronomy, from services to education, 
-              to journey through a personalized experience tailored to their specific needs.
-            </p>
-            <p>
-              Our desire is to remind everybody—from tech experts to small business owners—that 
-              AI is fundamental to the modern business experience, and achieving true integration 
-              can position artificial intelligence as an equalizer for businesses worldwide.
-            </p>
-            <p>
-              Thanks to a multidisciplinary approach combining full-stack development, UX/UI design, 
-              and strategic thinking, we could sincerely experience the transformative forces of AI 
-              that unite businesses and customers—even across different languages, platforms, and industries.
-            </p>
-            <p>
-              Built with React, TypeScript, NestJS, and OpenAI's GPT-4, ABA AI represents a complete 
-              solution that understands context, learns from interactions, and responds with the 
-              intelligence and empathy that modern businesses require.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl">
+            {/* Frontend */}
+            <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300 hover:bg-white/5 group">
+              <h3 className="text-xl font-light tracking-wider uppercase mb-6">Frontend</h3>
+              <ul className="space-y-3 text-sm font-light leading-relaxed text-white/80">
+                <li>React 18.2.0 + TypeScript 5.1.3</li>
+                <li>Vite 5.0.8 — Build tool y dev server</li>
+                <li>Tailwind CSS 3.4.18 — Estilos utility-first</li>
+                <li>Framer Motion 12.23.24 — Animaciones</li>
+                <li>GSAP 3.13.0 — Animaciones avanzadas</li>
+                <li>React Router DOM 7.9.3 — Navegación</li>
+                <li>Zustand 5.0.8 — Estado global</li>
+                <li>TanStack React Query 5.90.10 — Estado del servidor y caché</li>
+                <li>React Hook Form 7.66.1 + Zod 4.1.12 — Formularios y validación</li>
+                <li>Three.js + React Three Fiber — Elementos 3D</li>
+                <li>Axios 1.13.2 — Cliente HTTP</li>
+              </ul>
+                </div>
+
+            {/* Backend */}
+            <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300 hover:bg-white/5 group">
+              <h3 className="text-xl font-light tracking-wider uppercase mb-6">Backend</h3>
+              <ul className="space-y-3 text-sm font-light leading-relaxed text-white/80">
+                <li>NestJS 10.0.0 — Framework Node.js</li>
+                <li>TypeScript 5.1.3 — Tipado estático</li>
+                <li>Prisma 6.16.3 — ORM y gestión de base de datos</li>
+                <li>PostgreSQL — Base de datos relacional</li>
+                <li>Passport + JWT — Autenticación y autorización</li>
+                <li>bcrypt — Hashing de contraseñas</li>
+                <li>Helmet + Throttler — Seguridad y rate limiting</li>
+                <li>Winston — Logging estructurado</li>
+                <li>class-validator + class-transformer — Validación y transformación</li>
+              </ul>
+                    </div>
+
+            {/* AI & Integrations */}
+            <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300 hover:bg-white/5 group">
+              <h3 className="text-xl font-light tracking-wider uppercase mb-6">AI & Integrations</h3>
+              <ul className="space-y-3 text-sm font-light leading-relaxed text-white/80">
+                <li>OpenAI GPT-5.1 — Motor de IA conversacional</li>
+                <li>Meta Business API — Integración WhatsApp/Instagram/Facebook</li>
+                <li>Stripe API — Pagos y suscripciones</li>
+                <li>Calendly API — Gestión de reservas</li>
+                    </ul>
+                  </div>
+
+            {/* DevOps & Tools */}
+            <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300 hover:bg-white/5 group">
+              <h3 className="text-xl font-light tracking-wider uppercase mb-6">DevOps & Tools</h3>
+              <ul className="space-y-3 text-sm font-light leading-relaxed text-white/80">
+                <li>Vercel — Deploy frontend</li>
+                <li>Railway — Deploy backend</li>
+                <li>Prisma Studio — Gestión de base de datos</li>
+                <li>ESLint + Prettier — Code quality</li>
+                    </ul>
+              </div>
             </div>
           </section>
 
         {/* Horizontal Divider */}
         <div className="w-full h-px bg-white/20 my-32"></div>
 
-        {/* BLOCK 7 — Credits (Film-Style) */}
+        {/* BLOCK 7 — Design System */}
         <section className="px-8 md:px-16 py-32 max-w-7xl mx-auto">
-          <div className="space-y-12 max-w-4xl">
-            <div>
-              <h3 className="text-xl font-light tracking-wider uppercase mb-4">Agency:</h3>
-              <p className="text-lg font-light opacity-80">Abril Marangoni Studio</p>
-                </div>
+          <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-20">
+            DESIGN SYSTEM
+                    </h2>
 
-            <div>
-              <h3 className="text-xl font-light tracking-wider uppercase mb-4">Creative Director & Developer:</h3>
-              <p className="text-lg font-light opacity-80">Abril Marangoni</p>
-                </div>
-
-            <div>
-              <h3 className="text-xl font-light tracking-wider uppercase mb-4">UI/UX Design:</h3>
-              <p className="text-lg font-light opacity-80">Abril Marangoni</p>
-                </div>
-
-                        <div>
-              <h3 className="text-xl font-light tracking-wider uppercase mb-4">Full-Stack Development:</h3>
-              <p className="text-lg font-light opacity-80">Abril Marangoni</p>
-                </div>
-
-                        <div>
-              <h3 className="text-xl font-light tracking-wider uppercase mb-4">Backend Architecture:</h3>
-              <p className="text-lg font-light opacity-80">Abril Marangoni</p>
-                          </div>
-
-                        <div>
-              <h3 className="text-xl font-light tracking-wider uppercase mb-4">AI Integration:</h3>
-              <p className="text-lg font-light opacity-80">Abril Marangoni</p>
-                </div>
-
-                        <div>
-              <h3 className="text-xl font-light tracking-wider uppercase mb-4">Technical Stack:</h3>
-              <div className="space-y-2 text-lg font-light opacity-80">
-                <p>React 18.2.0, TypeScript 5.1.3, Vite 5.0.8</p>
-                <p>NestJS 10.0.0, Prisma 6.16.3, PostgreSQL</p>
-                <p>OpenAI GPT-4, Meta Business API</p>
-                <p>Tailwind CSS, Framer Motion, Three.js</p>
+          {/* Color Palette */}
+          <div className="mb-24">
+            <h3 className="text-xl font-light tracking-wider uppercase mb-12">Color Palette</h3>
+            
+            {/* Primary Colors */}
+            <div className="mb-12 border border-white/20 p-8">
+              <h4 className="text-sm font-light uppercase mb-6 text-white/60">Primary</h4>
+              <div className="flex gap-0">
+                  <div className="group flex-1 hover:flex-[2] transition-all duration-500">
+                    <div className="h-24 bg-black border-2 border-white/30"></div>
+                    <div className="py-3">
+                      <p className="text-sm font-light">Black</p>
+                      <p className="text-xs text-white/40">#000000</p>
                     </div>
-                          </div>
-
-                        <div>
-              <h3 className="text-xl font-light tracking-wider uppercase mb-4">Soundtrack Composer:</h3>
-              <p className="text-lg font-light opacity-80">—</p>
+                  </div>
+                  <div className="group flex-1 hover:flex-[2] transition-all duration-500">
+                    <div className="h-24 bg-white"></div>
+                    <div className="py-3">
+                      <p className="text-sm font-light">White</p>
+                      <p className="text-xs text-white/40">#FFFFFF</p>
+                    </div>
+                  </div>
+                  <div className="group flex-1 hover:flex-[2] transition-all duration-500">
+                    <div className="h-24 border-l border-white/10" style={{ backgroundColor: '#D94A00' }}></div>
+                    <div className="py-3">
+                      <p className="text-sm font-light">Orange Accent</p>
+                      <p className="text-xs text-white/40">#D94A00</p>
+                    </div>
+                  </div>
+                </div>
                   </div>
 
+            {/* Gray Scale */}
+            <div className="mb-12 border border-white/20 p-8">
+              <h4 className="text-sm font-light uppercase mb-6 text-white/60">Gray Scale</h4>
+              <div className="flex gap-0">
+                  <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
+                    <div className="h-20 bg-white"></div>
+                    <div className="py-3">
+                      <p className="text-xs font-light text-white/60">white</p>
+                  </div>
+                </div>
+                  <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
+                    <div className="h-20 bg-gray-100"></div>
+                    <div className="py-3">
+                      <p className="text-xs font-light text-white/60">gray-100</p>
+              </div>
+            </div>
+                  <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
+                    <div className="h-20 bg-gray-200"></div>
+                    <div className="py-3">
+                      <p className="text-xs font-light text-white/60">gray-200</p>
+                  </div>
+                </div>
+                  <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
+                    <div className="h-20 bg-gray-300"></div>
+                    <div className="py-3">
+                      <p className="text-xs font-light text-white/60">gray-300</p>
+                  </div>
+                  </div>
+                  <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
+                    <div className="h-20 bg-gray-400"></div>
+                    <div className="py-3">
+                      <p className="text-xs font-light text-white/60">gray-400</p>
+                  </div>
+                </div>
+                  <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
+                    <div className="h-20 bg-gray-500"></div>
+                    <div className="py-3">
+                      <p className="text-xs font-light text-white/60">gray-500</p>
+                </div>
+              </div>
+                  <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
+                    <div className="h-20 bg-gray-600"></div>
+                    <div className="py-3">
+                      <p className="text-xs font-light text-white/60">gray-600</p>
+            </div>
+                </div>
+                  <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
+                    <div className="h-20 bg-gray-700"></div>
+                    <div className="py-3">
+                      <p className="text-xs font-light text-white/60">gray-700</p>
+              </div>
+            </div>
+                  <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
+                    <div className="h-20 bg-gray-800"></div>
+                    <div className="py-3">
+                      <p className="text-xs font-light text-white/60">gray-800</p>
+                  </div>
+                </div>
+                  <div className="group flex-1 hover:flex-[1.5] transition-all duration-500">
+                    <div className="h-20 bg-gray-900"></div>
+                    <div className="py-3">
+                      <p className="text-xs font-light text-white/60">gray-900</p>
+                    </div>
+                </div>
+                </div>
+              </div>
+
+            {/* Transparencies */}
+            <div className="border border-white/20 p-8">
+              <h4 className="text-sm font-light uppercase mb-6 text-white/60">Transparencies & Overlays</h4>
+              <div className="flex gap-0">
+                  <div className="group flex-1 hover:flex-[2] transition-all duration-500">
+                    <div className="h-20 bg-black/95 backdrop-blur-sm"></div>
+                    <div className="py-3 px-2">
+                      <p className="text-xs font-light">black/95</p>
+                      <p className="text-[10px] text-white/40">Header</p>
+                  </div>
+                </div>
+                  <div className="group flex-1 hover:flex-[2] transition-all duration-500">
+                    <div className="h-20 bg-black/50"></div>
+                    <div className="py-3 px-2">
+                      <p className="text-xs font-light">black/50</p>
+                      <p className="text-[10px] text-white/40">Cards</p>
+                          </div>
+                          </div>
+                  <div className="group flex-1 hover:flex-[2] transition-all duration-500">
+                    <div className="h-20 bg-white/20"></div>
+                    <div className="py-3 px-2">
+                      <p className="text-xs font-light">white/20</p>
+                      <p className="text-[10px] text-white/40">Borders</p>
+                        </div>
+                          </div>
+                  <div className="group flex-1 hover:flex-[2] transition-all duration-500">
+                    <div className="h-20 bg-white/10"></div>
+                    <div className="py-3 px-2">
+                      <p className="text-xs font-light">white/10</p>
+                      <p className="text-[10px] text-white/40">Dividers</p>
+                          </div>
+                        </div>
+                  <div className="group flex-1 hover:flex-[2] transition-all duration-500">
+                    <div className="h-20 bg-white/5"></div>
+                    <div className="py-3 px-2">
+                      <p className="text-xs font-light">white/5</p>
+                      <p className="text-[10px] text-white/40">Hover</p>
+                      </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
+          {/* Typography */}
+          <div className="mb-24">
+            <h3 className="text-xl font-light tracking-wider uppercase mb-8">Typography</h3>
+            <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300">
+              <h4 className="text-sm font-light uppercase mb-8 text-white/60">Hierarchy</h4>
+                  <div className="space-y-8">
                         <div>
-              <h3 className="text-xl font-light tracking-wider uppercase mb-4">Producers:</h3>
-              <p className="text-lg font-light opacity-80">—</p>
+                  <p className="text-5xl lg:text-6xl font-light text-white mb-3 leading-tight">Display Title</p>
+                  <p className="text-xs text-white/40 font-mono">text-5xl lg:text-6xl, font-light, leading-tight</p>
+                    </div>
+                        <div>
+                  <p className="text-4xl lg:text-5xl font-light text-white mb-3 leading-tight">Section Title</p>
+                  <p className="text-xs text-white/40 font-mono">text-4xl lg:text-5xl, font-light, leading-tight</p>
+                        </div>
+                        <div>
+                  <p className="text-2xl lg:text-3xl font-light text-white/80 mb-3 leading-relaxed">Subtitle</p>
+                  <p className="text-xs text-white/40 font-mono">text-2xl lg:text-3xl, font-light, leading-relaxed</p>
+                        </div>
+                        <div>
+                  <p className="text-base lg:text-lg font-light text-white/60 mb-3 leading-relaxed">Body text for paragraphs and longer content. This is how regular text appears throughout the interface.</p>
+                  <p className="text-xs text-white/40 font-mono">text-base lg:text-lg, font-light, leading-relaxed</p>
+                        </div>
+                        <div>
+                  <p className="text-sm font-light text-white/40 mb-3">Label</p>
+                  <p className="text-xs text-white/40 font-mono">text-sm, font-light</p>
+                        </div>
+                </div>
+              </div>
+                  </div>
+
+          {/* Spacing & Layout */}
+          <div className="mb-24">
+            <h3 className="text-xl font-light tracking-wider uppercase mb-8">Spacing & Layout</h3>
+            <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div>
+                  <h4 className="text-sm font-light uppercase mb-4 text-white/60">Containers</h4>
+                  <div className="space-y-3 text-sm font-light text-white/80">
+                        <div>
+                      <p className="text-white mb-1">Main content</p>
+                      <p className="text-xs text-white/40 font-mono">max-w-7xl (1280px)</p>
+                        </div>
+                        <div>
+                      <p className="text-white mb-1">Text content</p>
+                      <p className="text-xs text-white/40 font-mono">max-w-4xl (896px)</p>
+                        </div>
+                        <div>
+                      <p className="text-white mb-1">Wide content</p>
+                      <p className="text-xs text-white/40 font-mono">max-w-6xl (1152px)</p>
+                        </div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-light uppercase mb-4 text-white/60">Padding</h4>
+                  <div className="space-y-3 text-sm font-light text-white/80">
+                    <div>
+                      <p className="text-white mb-1">Horizontal padding</p>
+                      <p className="text-xs text-white/40 font-mono">px-4 sm:px-6 lg:px-8</p>
+              </div>
+                    <div>
+                      <p className="text-white mb-1">Top spacing from header</p>
+                      <p className="text-xs text-white/40 font-mono">pt-[120px]</p>
+            </div>
+                    <div>
+                      <p className="text-white mb-1">Section spacing</p>
+                      <p className="text-xs text-white/40 font-mono">mb-20 / mb-24</p>
+                  </div>
+                </div>
+                  </div>
+                <div>
+                  <h4 className="text-sm font-light uppercase mb-4 text-white/60">Gaps</h4>
+                  <div className="space-y-3 text-sm font-light text-white/80">
+                    <div>
+                      <p className="text-white mb-1">Split layouts</p>
+                      <p className="text-xs text-white/40 font-mono">gap-[76px]</p>
+                  </div>
+                    <div>
+                      <p className="text-white mb-1">Card spacing</p>
+                      <p className="text-xs text-white/40 font-mono">gap-8</p>
+                </div>
+                    <div>
+                      <p className="text-white mb-1">Grid spacing</p>
+                      <p className="text-xs text-white/40 font-mono">gap-6</p>
+                  </div>
+                  </div>
+                </div>
+                  </div>
+                  </div>
+                </div>
+
+          {/* Design Principles */}
+          <div className="border border-white/20 p-8 hover:border-white/40 transition-all duration-300">
+            <h3 className="text-xl font-light tracking-wider uppercase mb-6">Design Principles</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm font-light text-white/80">
+              <div>
+                <p className="text-white mb-2">Minimalism</p>
+                <p className="text-white/60">Clean interface, generous spacing, light typography</p>
+                    </div>
+              <div>
+                <p className="text-white mb-2">Consistency</p>
+                <p className="text-white/60">Uniform spacing, consistent colors and typography</p>
+                </div>
+              <div>
+                <p className="text-white mb-2">Elegance</p>
+                <p className="text-white/60">Smooth animations, subtle effects, refined palette</p>
+                        </div>
+              <div>
+                <p className="text-white mb-2">Accessibility</p>
+                <p className="text-white/60">Adequate contrast, readable sizes, clear hover states</p>
+                </div>
               </div>
             </div>
           </section>
@@ -463,7 +700,7 @@ export default function AbaAiProject() {
           <div className="space-y-4 text-lg font-light mb-12">
             <p>Abril Marangoni</p>
             <p>Buenos Aires, Argentina</p>
-                      </div>
+          </div>
           <div className="space-y-2 text-lg font-light">
             <a href="#" className="block hover:opacity-60 transition-opacity duration-300">
               Privacy
