@@ -853,8 +853,11 @@ export default function Portfolio() {
           <PromptingIsAllYouNeed />
         </section>
 
+        {/* Divider */}
+        <div className="w-full h-px bg-stone-200 dark:bg-stone-800"></div>
+
         {/* Survey CTA Section */}
-        <section className="py-32 px-8 bg-stone-100 dark:bg-stone-900">
+        <section className="py-32 px-8">
           <div className="max-w-7xl mx-auto text-center">
             <div className="space-y-8">
               <h2 className="text-3xl lg:text-4xl font-light leading-tight">
@@ -867,7 +870,7 @@ export default function Portfolio() {
               </p>
               <Button
                 onClick={() => setIsSurveyOpen(true)}
-                className="px-8 py-6 text-base font-light bg-rose-500 text-white hover:bg-rose-600 transition-colors duration-300"
+                className="px-8 py-6 text-base font-light bg-[#d97706] text-white hover:bg-[#b86205] transition-colors duration-300"
               >
                 {language === "en" ? "Take Survey" : "Hacer Encuesta"}
               </Button>
