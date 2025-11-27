@@ -332,20 +332,26 @@ export default function AbaAiProject() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-8 py-6">
-          <div className="flex justify-between items-center">
-            <div className="text-sm font-light tracking-wider">ABA AI PROJECT</div>
-            <div className="flex items-center space-x-8">
+          <div className="flex justify-between items-center relative">
+            {/* Left: Back to Portfolio */}
             <Link
               href="/"
-                className="flex items-center space-x-2 text-sm font-light hover:text-white/60 transition-colors duration-300 relative group"
+              className="flex items-center space-x-2 text-sm font-light hover:text-white/60 transition-colors duration-300 relative group"
             >
               <ArrowLeft className="h-4 w-4" />
-                <span>{language === "en" ? "Back to Portfolio" : "Volver al Portfolio"}</span>
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300"></span>
+              <span>{language === "en" ? "Back to Portfolio" : "Volver al Portfolio"}</span>
+              <span className="absolute -bottom-1 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300"></span>
             </Link>
 
+            {/* Center: ABA IA PROJECT */}
+            <div className="text-sm font-light tracking-wider absolute left-1/2 transform -translate-x-1/2">
+              ABA IA PROJECT
+            </div>
+
+            {/* Right: Toggles */}
+            <div className="flex items-center space-x-8">
               {/* Language Toggle */}
-            <Button
+              <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleLanguage}
@@ -353,7 +359,7 @@ export default function AbaAiProject() {
               >
                 <Globe className="h-3 w-3" />
                 <span className="text-xs font-light">{language.toUpperCase()}</span>
-            </Button>
+              </Button>
 
               {/* Dark Mode Toggle */}
               <button
@@ -377,45 +383,51 @@ export default function AbaAiProject() {
             {/* Content */}
             <div className="max-w-4xl mx-auto">
             <div className="space-y-8">
-                <h2 className="text-4xl md:text-5xl font-light">ABA IA</h2>
+                <h2 className="text-4xl md:text-5xl font-thin">ABA IA</h2>
                 <p className="text-xl font-light leading-relaxed">
                   It's a SaaS conversational AI assistant platform that connects WhatsApp, Instagram, and Facebook through Meta Business API. It allows businesses to automate 24/7 customer service using OpenAI GPT-5.1, with a dashboard to manage products, services, and conversations from a single place.
                 </p>
-                <a
-                  href="https://ab-aai-portfolio-9i71-rldhul616-marangoniiabril-9954s-projects.vercel.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-2 text-sm font-light text-white hover:text-white/60 transition-colors duration-300 relative group"
-                >
-                  <span>Try Real Project</span>
-                  <ExternalLink className="h-3 w-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
-                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300"></span>
-                </a>
-                <div className="pt-8 space-y-2">
-                  <p className="text-sm font-light text-white/60">Full-Stack SaaS Platform</p>
-                  <p className="text-sm font-light text-white/60">built and design by abi marangoni</p>
-                  <p className="text-sm font-light text-white/60">2025</p>
+              </div>
                 </div>
               </div>
-            </div>
-          </div>
           {/* Image - aligned exactly with vertical lines */}
           <div 
             className="w-full"
             style={{
-              marginTop: 'calc(24px - 250px)',
+              marginTop: 'calc(24px - 200px)',
               paddingLeft: 'max(27px, calc(50vw - 640px - 5px))',
               paddingRight: 'max(27px, calc(50vw - 640px - 5px))'
             }}
           >
+            <div className="overflow-hidden w-full select-none" style={{ userSelect: 'none' }}>
                 <Image
-              src="/images/MANO2.png"
-              alt="ABA IA"
-              width={1280}
-              height={800}
-              className="w-full h-auto object-cover grayscale opacity-40"
+                src="/images/MANO2.png"
+                alt="ABA IA"
+                width={1300}
+                height={820}
+                className="w-full h-auto object-cover grayscale opacity-40 pointer-events-none select-none"
+                style={{ 
+                  transform: 'rotate(-10deg) scale(1.00)',
+                  userSelect: 'none',
+                  pointerEvents: 'none',
+                  WebkitUserSelect: 'none'
+                } as React.CSSProperties}
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
+                onDragStart={(e) => e.preventDefault()}
                   priority
                 />
+              </div>
+            </div>
+          {/* Footer info after image */}
+          <div className="max-w-7xl mx-auto text-center w-full px-8 md:px-16" style={{ marginTop: 'calc(24px - 80px)' }}>
+            <div className="max-w-4xl mx-auto">
+              <div className="space-y-2">
+                <p className="text-sm font-light text-white/60">Full-Stack SaaS Platform</p>
+                <p className="text-sm font-light text-white/60">built and design by abi marangoni</p>
+                <p className="text-sm font-light text-white/60">2025</p>
+                </div>
+              </div>
             </div>
           </section>
 
