@@ -585,15 +585,6 @@ export default function Portfolio() {
                   />
                   <div className="absolute inset-0 border border-stone-200 dark:border-stone-800 pointer-events-none"></div>
                 </div>
-                <div className="mt-6 w-80 mx-auto lg:mx-0">
-                  <button
-                    onClick={handleDoNotPress}
-                    disabled={viewState !== "normal"}
-                    className="w-full px-6 py-3 text-sm font-light border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 disabled:opacity-50"
-                  >
-                    DO NOT PRESS THIS BUTTON!!!
-                  </button>
-                </div>
               </div>
 
               {/* Introduction */}
