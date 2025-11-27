@@ -10,11 +10,8 @@ export default function AbaAiProject() {
   const [language, setLanguage] = useState<"en" | "es">("en")
   const [darkMode, setDarkMode] = useState(false)
   const [horizontalTitle, setHorizontalTitle] = useState("Our Mission")
-  const [horizontalTitle2, setHorizontalTitle2] = useState("TECH STACK")
   const horizontalSectionRef = useRef<HTMLElement>(null)
   const horizontalTrackRef = useRef<HTMLDivElement>(null)
-  const horizontalSection2Ref = useRef<HTMLElement>(null)
-  const horizontalTrack2Ref = useRef<HTMLDivElement>(null)
   const flowLineRef = useRef<HTMLDivElement>(null)
   const flowNodeRef = useRef<HTMLDivElement>(null)
   const flowContainerRef = useRef<HTMLDivElement>(null)
@@ -89,63 +86,6 @@ export default function AbaAiProject() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Horizontal scroll effect for Tech Stack + Conversation Flow (scrolls in opposite direction)
-  useEffect(() => {
-    const handleScroll2 = () => {
-      if (!horizontalSection2Ref.current || !horizontalTrack2Ref.current) return
-
-      const section = horizontalSection2Ref.current
-      const track = horizontalTrack2Ref.current
-      const sectionTop = section.offsetTop
-      const sectionHeight = section.offsetHeight
-      const windowHeight = window.innerHeight
-      const scrollY = window.scrollY
-
-      const scrollDelay = windowHeight * 0.2
-      const startScroll = sectionTop + scrollDelay
-      const endScroll = sectionTop + sectionHeight - windowHeight
-
-      if (scrollY >= startScroll && scrollY <= endScroll) {
-        // Calculate scroll progress (0 to 1)
-        const progress = (scrollY - startScroll) / (endScroll - startScroll)
-        const clampedProgress = Math.max(0, Math.min(1, progress))
-
-        // Update title based on scroll progress (2 slides)
-        if (clampedProgress < 0.5) {
-          setHorizontalTitle2("TECH STACK")
-        } else {
-          setHorizontalTitle2("ARCHITECTURE FLOW")
-        }
-
-        // Calculate translate - OPPOSITE DIRECTION (positive instead of negative)
-        // Starts showing second slide, scrolls to first
-        const viewportWidth = window.innerWidth
-        const totalSlides = 2
-        const maxTranslate = (totalSlides - 1) * viewportWidth
-        const translateX = -viewportWidth + (clampedProgress * maxTranslate)
-
-        // Apply smooth transform
-        requestAnimationFrame(() => {
-          track.style.transform = `translateX(${translateX}px)`
-        })
-      } else if (scrollY < startScroll) {
-        setHorizontalTitle2("TECH STACK")
-        requestAnimationFrame(() => {
-          track.style.transform = `translateX(-100vw)`
-        })
-      } else {
-        setHorizontalTitle2("CONVERSATION FLOW")
-        requestAnimationFrame(() => {
-          track.style.transform = `translateX(0px)`
-        })
-      }
-    }
-
-    window.addEventListener("scroll", handleScroll2, { passive: true })
-    handleScroll2() // Initial check
-
-    return () => window.removeEventListener("scroll", handleScroll2)
-  }, [])
 
   // Animate flow node
   useEffect(() => {
@@ -517,140 +457,122 @@ export default function AbaAiProject() {
         {/* Horizontal Divider */}
         <div className="w-full h-px bg-white/20 my-32"></div>
 
-        {/* BLOCK 5 & 6 — Horizontal Scroll Section (Tech Stack + Conversation Flow) - Scrolls opposite direction */}
-        <section
-          ref={horizontalSection2Ref}
-          className="relative"
-          style={{ height: "300vh" }}
-        >
-          <div className="sticky top-0 h-screen overflow-hidden">
-            <div className="h-full flex items-center">
-              <div
-                ref={horizontalTrack2Ref}
-                className="flex transition-transform duration-100 ease-out"
-                style={{ willChange: "transform", transform: "translateX(-100vw)" }}
-              >
-                {/* Slide 1 — Architecture Flow (starts hidden on right) */}
-                <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
-                  <div className="max-w-4xl w-full">
-                    <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
-                      ARCHITECTURE FLOW
-                    </h2>
-                    <div ref={flowContainerRef} className="relative">
-                      {/* Vertical line - white */}
-                      <div 
-                        ref={flowLineRef}
-                        className="absolute top-5 bottom-5 w-0.5 z-20"
-                        style={{ 
-                          left: '21px',
-                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 100%)',
-                        }}
-                      ></div>
-                      
-                      {/* Animated node - orange */}
-                      <div
-                        ref={flowNodeRef}
-                        className="absolute w-3 h-3 rounded-full z-20"
-                        style={{ 
-                          left: '21px',
-                          transform: 'translate(-50%, -50%)',
-                          backgroundColor: '#D94A00',
-                          boxShadow: '0 0 15px rgba(217,74,0,0.9), 0 0 30px rgba(217,74,0,0.5)',
-                          top: '21px'
-                        }}
-                      ></div>
-                      
-                      <div className="space-y-7 relative">
-                        <div data-step="1" className="flex items-center gap-5 relative">
-                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">1</div>
-                          <p className="text-sm font-light text-white/90">{t.step1}</p>
-                    </div>
-                        <div data-step="2" className="flex items-center gap-5 relative">
-                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">2</div>
-                          <p className="text-sm font-light text-white/90">{t.step2}</p>
-                        </div>
-                        <div data-step="3" className="flex items-center gap-5 relative">
-                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">3</div>
-                          <p className="text-sm font-light text-white/90">{t.step3}</p>
-                      </div>
-                        <div data-step="4" className="flex items-center gap-5 relative">
-                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">4</div>
-                          <p className="text-sm font-light text-white/90">{t.step4}</p>
-                        </div>
-                        <div data-step="5" className="flex items-center gap-5 relative">
-                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">5</div>
-                          <p className="text-sm font-light text-white/90">{t.step5}</p>
-                      </div>
-                        <div data-step="6" className="flex items-center gap-5 relative">
-                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">6</div>
-                          <p className="text-sm font-light text-white/90">{t.step6}</p>
-                        </div>
-                        <div data-step="7" className="flex items-center gap-5 relative">
-                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">7</div>
-                          <p className="text-sm font-light text-white/90">{t.step7}</p>
-                      </div>
-                        <div data-step="8" className="flex items-center gap-5 relative">
-                          <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">8</div>
-                          <p className="text-sm font-light text-white/90">{t.step8}</p>
-                    </div>
-                    </div>
-                        </div>
-                      </div>
-                        </div>
+        {/* BLOCK 5 — Tech Stack */}
+        <section className="px-8 md:px-16 py-32 max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
+            TECH STACK
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
+              <h3 className="text-lg font-light tracking-wider uppercase mb-4">Frontend</h3>
+              <ul className="space-y-2 text-sm font-light text-white/80">
+                <li>React 18 + TypeScript</li>
+                <li>Vite — Build tool</li>
+                <li>Tailwind CSS</li>
+                <li>Framer Motion + GSAP</li>
+                <li>React Router DOM</li>
+                <li>Zustand + TanStack Query</li>
+              </ul>
+            </div>
+            <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
+              <h3 className="text-lg font-light tracking-wider uppercase mb-4">Backend</h3>
+              <ul className="space-y-2 text-sm font-light text-white/80">
+                <li>NestJS + TypeScript</li>
+                <li>Prisma + PostgreSQL</li>
+                <li>Passport + JWT</li>
+                <li>Helmet + Throttler</li>
+                <li>Winston Logger</li>
+              </ul>
+            </div>
+            <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
+              <h3 className="text-lg font-light tracking-wider uppercase mb-4">AI & Integrations</h3>
+              <ul className="space-y-2 text-sm font-light text-white/80">
+                <li>OpenAI GPT-5.1</li>
+                <li>Meta Business API</li>
+                <li>Stripe API</li>
+                <li>Calendly API</li>
+              </ul>
+            </div>
+            <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
+              <h3 className="text-lg font-light tracking-wider uppercase mb-4">DevOps</h3>
+              <ul className="space-y-2 text-sm font-light text-white/80">
+                <li>Vercel — Frontend</li>
+                <li>Railway — Backend</li>
+                <li>Prisma Studio</li>
+                <li>ESLint + Prettier</li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
-                {/* Slide 2 — Tech Stack (visible first) */}
-                <div className="flex-shrink-0 w-screen h-screen flex items-center justify-center px-8 md:px-16">
-                  <div className="max-w-4xl w-full">
-                    <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
-                      TECH STACK
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
-                        <h3 className="text-lg font-light tracking-wider uppercase mb-4">Frontend</h3>
-                        <ul className="space-y-2 text-sm font-light text-white/80">
-                          <li>React 18 + TypeScript</li>
-                          <li>Vite — Build tool</li>
-                          <li>Tailwind CSS</li>
-                          <li>Framer Motion + GSAP</li>
-                          <li>React Router DOM</li>
-                          <li>Zustand + TanStack Query</li>
-                        </ul>
-                  </div>
-                      <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
-                        <h3 className="text-lg font-light tracking-wider uppercase mb-4">Backend</h3>
-                        <ul className="space-y-2 text-sm font-light text-white/80">
-                          <li>NestJS + TypeScript</li>
-                          <li>Prisma + PostgreSQL</li>
-                          <li>Passport + JWT</li>
-                          <li>Helmet + Throttler</li>
-                          <li>Winston Logger</li>
-                        </ul>
-                </div>
-                      <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
-                        <h3 className="text-lg font-light tracking-wider uppercase mb-4">AI & Integrations</h3>
-                        <ul className="space-y-2 text-sm font-light text-white/80">
-                          <li>OpenAI GPT-5.1</li>
-                          <li>Meta Business API</li>
-                          <li>Stripe API</li>
-                          <li>Calendly API</li>
-                        </ul>
-                      </div>
-                      <div className="border border-white/20 p-6 hover:border-white/40 transition-all duration-300">
-                        <h3 className="text-lg font-light tracking-wider uppercase mb-4">DevOps</h3>
-                        <ul className="space-y-2 text-sm font-light text-white/80">
-                          <li>Vercel — Frontend</li>
-                          <li>Railway — Backend</li>
-                          <li>Prisma Studio</li>
-                          <li>ESLint + Prettier</li>
-                        </ul>
-                    </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+        {/* Horizontal Divider */}
+        <div className="w-full h-px bg-white/20 my-16"></div>
+
+        {/* BLOCK 6 — Architecture Flow */}
+        <section className="px-8 md:px-16 py-32 max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-light tracking-wider uppercase mb-12">
+            ARCHITECTURE FLOW
+          </h2>
+          <div ref={flowContainerRef} className="relative max-w-2xl">
+            {/* Vertical line - white */}
+            <div 
+              ref={flowLineRef}
+              className="absolute top-5 bottom-5 w-0.5 z-20"
+              style={{ 
+                left: '21px',
+                background: 'linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 100%)',
+              }}
+            ></div>
+            
+            {/* Animated node - orange */}
+            <div
+              ref={flowNodeRef}
+              className="absolute w-3 h-3 rounded-full z-20"
+              style={{ 
+                left: '21px',
+                transform: 'translate(-50%, -50%)',
+                backgroundColor: '#D94A00',
+                boxShadow: '0 0 15px rgba(217,74,0,0.9), 0 0 30px rgba(217,74,0,0.5)',
+                top: '21px'
+              }}
+            ></div>
+            
+            <div className="space-y-7 relative">
+              <div data-step="1" className="flex items-center gap-5 relative">
+                <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">1</div>
+                <p className="text-sm font-light text-white/90">{t.step1}</p>
+              </div>
+              <div data-step="2" className="flex items-center gap-5 relative">
+                <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">2</div>
+                <p className="text-sm font-light text-white/90">{t.step2}</p>
+              </div>
+              <div data-step="3" className="flex items-center gap-5 relative">
+                <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">3</div>
+                <p className="text-sm font-light text-white/90">{t.step3}</p>
+              </div>
+              <div data-step="4" className="flex items-center gap-5 relative">
+                <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">4</div>
+                <p className="text-sm font-light text-white/90">{t.step4}</p>
+              </div>
+              <div data-step="5" className="flex items-center gap-5 relative">
+                <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">5</div>
+                <p className="text-sm font-light text-white/90">{t.step5}</p>
+              </div>
+              <div data-step="6" className="flex items-center gap-5 relative">
+                <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">6</div>
+                <p className="text-sm font-light text-white/90">{t.step6}</p>
+              </div>
+              <div data-step="7" className="flex items-center gap-5 relative">
+                <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">7</div>
+                <p className="text-sm font-light text-white/90">{t.step7}</p>
+              </div>
+              <div data-step="8" className="flex items-center gap-5 relative">
+                <div className="relative z-40 flex-shrink-0 w-[42px] h-[42px] border-2 border-white/30 rounded-full flex items-center justify-center text-sm font-medium text-white bg-black transition-colors duration-300">8</div>
+                <p className="text-sm font-light text-white/90">{t.step8}</p>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
         {/* Horizontal Divider */}
         <div className="w-full h-px bg-white/20 my-32"></div>

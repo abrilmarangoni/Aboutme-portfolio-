@@ -263,7 +263,7 @@ export default function Portfolio() {
       projectData: {
         abaAi: {
           title: "ABA AI",
-          subtitle: "Full-Stack AI Project",
+          subtitle: "Full-Stack SaaS Platform",
           description:
             "An intelligent AI assistant that connects through Meta platforms, automatically responding to WhatsApp, Instagram, and Facebook messages. Built the complete solution including backend, frontend, and UX/UI design.",
         },
@@ -336,7 +336,7 @@ export default function Portfolio() {
       projectData: {
         abaAi: {
           title: "ABA AI",
-          subtitle: "Proyecto Full-Stack con IA",
+          subtitle: "Plataforma SaaS Full-Stack",
           description:
             "Un asistente inteligente de IA que se conecta a través de plataformas Meta, respondiendo automáticamente mensajes de WhatsApp, Instagram y Facebook. Construí la solución completa incluyendo backend, frontend y diseño UX/UI.",
         },
@@ -392,7 +392,7 @@ export default function Portfolio() {
       subtitle: currentTranslations.projectData.abaAi.subtitle,
       description: currentTranslations.projectData.abaAi.description,
       image: "/images/mano3.png",
-      year: "2024",
+      year: "2025",
       href: "/projects/aba-ai",
     },
     {
@@ -597,7 +597,7 @@ export default function Portfolio() {
                 </div>
 
                 <div className="space-y-4 text-stone-600 dark:text-stone-400 font-light leading-relaxed">
-                  <p className="text-stone-900 dark:text-stone-100 font-medium">{currentTranslations.heroDescription1}</p>
+                  <p>{currentTranslations.heroDescription1}</p>
                   <p>{currentTranslations.heroDescription2}</p>
                   <p>{currentTranslations.heroDescription3}</p>
                 </div>
