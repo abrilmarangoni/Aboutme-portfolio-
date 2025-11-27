@@ -86,6 +86,8 @@ export function PromptingIsAllYouNeed() {
   const paddleRef = useRef<Paddle>({ x: 0, y: 0, width: 0, height: 0 })
   const wallsRef = useRef<Wall[]>([])
   const scaleRef = useRef(1)
+  const gameAreaWidthRef = useRef(0)
+  const gameAreaOffsetXRef = useRef(0)
   const [gameState, setGameState] = useState<"idle" | "playing" | "won" | "lost">("idle")
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium")
   const gameStateRef = useRef<"idle" | "playing" | "won" | "lost">("idle")
@@ -128,8 +130,10 @@ export function PromptingIsAllYouNeed() {
     }
 
     const totalWidth = calculateTextWidth(text)
+    const gameAreaWidth = gameAreaWidthRef.current || rect.width * 0.75
+    const gameAreaOffsetX = gameAreaOffsetXRef.current || (rect.width - gameAreaWidth) / 2
 
-    const startX = (rect.width - totalWidth) / 2
+    const startX = gameAreaOffsetX + (gameAreaWidth - totalWidth) / 2
     const textHeight = 5 * PIXEL_SIZE
     const startY = (rect.height - textHeight) / 2 - 60
 
@@ -178,7 +182,11 @@ export function PromptingIsAllYouNeed() {
 
       ctx.scale(dpr, dpr)
 
-      scaleRef.current = Math.min(rect.width / 1000, rect.height / 1000)
+      // Calcular área de juego reducida (75% del ancho)
+      gameAreaWidthRef.current = rect.width * 0.75
+      gameAreaOffsetXRef.current = (rect.width - gameAreaWidthRef.current) / 2
+
+      scaleRef.current = Math.min(gameAreaWidthRef.current / 1000, rect.height / 1000)
     }
 
     const initializeGame = () => {
@@ -249,6 +257,19 @@ export function PromptingIsAllYouNeed() {
         return
       }
 
+      const gameAreaWidth = gameAreaWidthRef.current || rect.width * 0.75
+      const gameAreaOffsetX = gameAreaOffsetXRef.current || (rect.width - gameAreaWidth) / 2
+      
+      // Rebotar en los bordes laterales del área de juego
+      if (ball.x - ball.radius < gameAreaOffsetX) {
+        ball.dx = -ball.dx
+        ball.x = gameAreaOffsetX + ball.radius
+      }
+      if (ball.x + ball.radius > gameAreaOffsetX + gameAreaWidth) {
+        ball.dx = -ball.dx
+        ball.x = gameAreaOffsetX + gameAreaWidth - ball.radius
+      }
+      
       const paddleSpeed = 25 * scaleRef.current
       if (keysPressed.current["ArrowLeft"]) {
         paddle.x -= paddleSpeed
@@ -256,7 +277,7 @@ export function PromptingIsAllYouNeed() {
       if (keysPressed.current["ArrowRight"]) {
         paddle.x += paddleSpeed
       }
-      paddle.x = Math.max(0, Math.min(rect.width - paddle.width, paddle.x))
+      paddle.x = Math.max(gameAreaOffsetX, Math.min(gameAreaOffsetX + gameAreaWidth - paddle.width, paddle.x))
 
       pixelsRef.current.forEach((pixel) => {
         if (
@@ -286,11 +307,18 @@ export function PromptingIsAllYouNeed() {
     const drawGame = () => {
       if (!ctx) return
       const rect = container.getBoundingClientRect()
+      const gameAreaWidth = gameAreaWidthRef.current || rect.width * 0.75
+      const gameAreaOffsetX = gameAreaOffsetXRef.current || (rect.width - gameAreaWidth) / 2
 
       ctx.imageSmoothingEnabled = false
 
       ctx.fillStyle = BACKGROUND_COLOR
       ctx.fillRect(0, 0, rect.width, rect.height)
+
+      // Dibujar líneas de borde del área de juego
+      ctx.strokeStyle = "#333333"
+      ctx.lineWidth = 2
+      ctx.strokeRect(gameAreaOffsetX, 0, gameAreaWidth, rect.height)
 
       pixelsRef.current.forEach((pixel) => {
         ctx.fillStyle = pixel.hit ? HIT_COLOR : COLOR
@@ -384,6 +412,8 @@ export function PromptingIsAllYouNeed() {
     if (!container) return
 
     const rect = container.getBoundingClientRect()
+    const gameAreaWidth = gameAreaWidthRef.current || rect.width * 0.75
+    const gameAreaOffsetX = gameAreaOffsetXRef.current || (rect.width - gameAreaWidth) / 2
     const PIXEL_SIZE = 16 * scale
     const speedMap = { easy: 10, medium: 12, hard: 14 }
     const BALL_SPEED = speedMap[difficulty] * scale
@@ -391,7 +421,7 @@ export function PromptingIsAllYouNeed() {
     resetGame()
 
     ballRef.current = {
-      x: rect.width / 2,
+      x: gameAreaOffsetX + gameAreaWidth / 2,
       y: rect.height * 0.7,
       dx: BALL_SPEED * 0.7,
       dy: -BALL_SPEED,
@@ -404,19 +434,19 @@ export function PromptingIsAllYouNeed() {
 
     wallsRef.current = [
       {
-        x: 0,
+        x: gameAreaOffsetX,
         y: 0,
-        width: rect.width,
+        width: gameAreaWidth,
         height: wallThickness,
       },
       {
-        x: 0,
+        x: gameAreaOffsetX,
         y: 0,
         width: wallThickness,
         height: rect.height,
       },
       {
-        x: rect.width - wallThickness,
+        x: gameAreaOffsetX + gameAreaWidth - wallThickness,
         y: 0,
         width: wallThickness,
         height: rect.height,
@@ -424,7 +454,7 @@ export function PromptingIsAllYouNeed() {
     ]
 
     paddleRef.current = {
-      x: rect.width / 2 - paddleLength / 2,
+      x: gameAreaOffsetX + gameAreaWidth / 2 - paddleLength / 2,
       y: rect.height - paddleThickness,
       width: paddleLength,
       height: paddleThickness,
