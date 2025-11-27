@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { CornerDownLeft } from "lucide-react"
+import { CornerDownLeft, Trophy } from "lucide-react"
 
 const COLOR = "#FFFFFF"
 const HIT_COLOR = "#1a1a1a"
@@ -10,6 +10,11 @@ const BALL_COLOR = "#FFFFFF"
 const PADDLE_COLOR = "#d97706"
 const WALL_COLOR = "#FFFFFF"
 const LETTER_SPACING = 1
+
+// Scoring System Constants
+const SCORE_STEP = 10 // Increments always in steps of 10
+const TIME_WEIGHT = 0.05 // Small value to avoid exponential growth
+const PIXEL_WEIGHT = 0.1 // Each destroyed pixel adds controlled value
 
 const PIXEL_MAP = {
   H: [
@@ -90,14 +95,147 @@ export function PromptingIsAllYouNeed() {
   const gameAreaOffsetXRef = useRef(0)
   const [gameState, setGameState] = useState<"idle" | "playing" | "won" | "lost">("idle")
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium")
+  const [companyName, setCompanyName] = useState("")
+  const [score, setScore] = useState(0)
+  const [pixelsDestroyed, setPixelsDestroyed] = useState(0)
+  const [showRanking, setShowRanking] = useState(false)
+  const [ranking, setRanking] = useState<{ easy: Array<{ score: number; pixelsDestroyed: number; timeMs: number; date: string; companyName: string }>; medium: Array<{ score: number; pixelsDestroyed: number; timeMs: number; date: string; companyName: string }>; hard: Array<{ score: number; pixelsDestroyed: number; timeMs: number; date: string; companyName: string }> }>({ easy: [], medium: [], hard: [] })
   const gameStateRef = useRef<"idle" | "playing" | "won" | "lost">("idle")
   const keysPressed = useRef<{ [key: string]: boolean }>({})
   const handleStartGameRef = useRef<(() => void) | null>(null)
+  const gameStartTimeRef = useRef<number>(0)
+  const companyNameRef = useRef<string>("")
+  const finalScoreRef = useRef<number>(0)
+  const gameOverRef = useRef<boolean>(false)
+  const currentScoreRef = useRef<number>(0)
+  const scoreSavedRef = useRef<boolean>(false)
+  const rankingRef = useRef<HTMLDivElement>(null)
 
   // Sincronizar ref con estado
   useEffect(() => {
     gameStateRef.current = gameState
   }, [gameState])
+
+  // Sincronizar ref con companyName
+  useEffect(() => {
+    companyNameRef.current = companyName
+  }, [companyName])
+
+  // Función para actualizar el score usando la fórmula normalizada
+  const updateScore = useCallback((elapsedTime: number, pixelsBroken: number) => {
+    if (gameOverRef.current) return // STOP updating if game over
+
+    const rawScore = elapsedTime * TIME_WEIGHT + pixelsBroken * PIXEL_WEIGHT
+    const normalizedScore = Math.floor(rawScore / SCORE_STEP) * SCORE_STEP
+    
+    currentScoreRef.current = normalizedScore
+    setScore(normalizedScore)
+  }, [])
+
+  // Función para congelar el score cuando el juego termina
+  const freezeScore = useCallback(() => {
+    gameOverRef.current = true
+    finalScoreRef.current = currentScoreRef.current
+    setScore(finalScoreRef.current)
+  }, [])
+
+  // Cargar ranking al inicio
+  useEffect(() => {
+    const loadRanking = async () => {
+      try {
+        console.log('Loading ranking...')
+        const response = await fetch('/api/ranking')
+        if (response.ok) {
+          const data = await response.json()
+          console.log('Ranking loaded:', data)
+          setRanking(data)
+        } else {
+          console.error('Failed to load ranking:', await response.text())
+        }
+      } catch (error) {
+        console.error("Error loading ranking:", error)
+      }
+    }
+    loadRanking()
+  }, [])
+
+  // Cerrar ranking al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showRanking && rankingRef.current && !rankingRef.current.contains(event.target as Node)) {
+        setShowRanking(false)
+      }
+    }
+
+    if (showRanking) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showRanking])
+
+  // Función para guardar score en el ranking (solo una vez)
+  const saveScore = useCallback(async (finalScore: number, difficulty: "easy" | "medium" | "hard", pixelsDestroyed: number, timeMs: number, companyName: string) => {
+    // Prevenir guardado múltiple
+    if (scoreSavedRef.current) {
+      console.log('Score already saved, skipping...')
+      return
+    }
+
+    scoreSavedRef.current = true
+
+    console.log('Saving score to API:', {
+      finalScore,
+      difficulty,
+      pixelsDestroyed,
+      timeMs,
+      companyName: companyName.trim() || "Anonymous"
+    })
+
+    try {
+      const response = await fetch('/api/ranking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          score: finalScore,
+          difficulty,
+          pixelsDestroyed,
+          timeMs,
+          companyName: companyName.trim() || "Anonymous",
+        }),
+      })
+
+      const responseData = await response.json()
+      console.log('API response:', responseData)
+
+      if (response.ok) {
+        console.log('Score saved successfully, reloading ranking...')
+        // Esperar un momento antes de recargar para asegurar que KV haya procesado
+        setTimeout(async () => {
+          const updatedRanking = await fetch('/api/ranking')
+          if (updatedRanking.ok) {
+            const data = await updatedRanking.json()
+            console.log('Updated ranking data:', data)
+            setRanking(data)
+          } else {
+            console.error('Failed to reload ranking')
+          }
+        }, 500)
+      } else {
+        console.error("Failed to save score:", responseData)
+        // Resetear flag si falla para permitir reintento
+        scoreSavedRef.current = false
+      }
+    } catch (error) {
+      console.error("Error saving score:", error)
+      // Resetear flag si falla para permitir reintento
+      scoreSavedRef.current = false
+    }
+  }, [])
 
   const resetGame = useCallback(() => {
     const scale = scaleRef.current
@@ -253,6 +391,17 @@ export function PromptingIsAllYouNeed() {
       }
 
       if (ball.y - ball.radius > rect.height) {
+        // Congelar score inmediatamente
+        freezeScore()
+        
+        const timeElapsed = Date.now() - gameStartTimeRef.current
+        const timeMs = timeElapsed
+        const currentPixelsDestroyed = pixelsRef.current.filter(p => p.hit).length
+        
+        setPixelsDestroyed(currentPixelsDestroyed)
+        
+        // Guardar score automáticamente cuando pierde
+        saveScore(finalScoreRef.current, difficulty, currentPixelsDestroyed, timeMs, companyNameRef.current)
         setGameState("lost")
         return
       }
@@ -288,6 +437,9 @@ export function PromptingIsAllYouNeed() {
           ball.y - ball.radius < pixel.y + pixel.size
         ) {
           pixel.hit = true
+          // Incrementar contador de píxeles destruidos
+          setPixelsDestroyed((prev) => prev + 1)
+          
           const centerX = pixel.x + pixel.size / 2
           const centerY = pixel.y + pixel.size / 2
           if (Math.abs(ball.x - centerX) > Math.abs(ball.y - centerY)) {
@@ -300,6 +452,17 @@ export function PromptingIsAllYouNeed() {
 
       const allHit = pixelsRef.current.every((pixel) => pixel.hit)
       if (allHit) {
+        // Congelar score inmediatamente cuando gana
+        freezeScore()
+        
+        const timeElapsed = Date.now() - gameStartTimeRef.current
+        const timeMs = timeElapsed
+        const currentPixelsDestroyed = pixelsRef.current.filter(p => p.hit).length
+        
+        setPixelsDestroyed(currentPixelsDestroyed)
+        
+        // Guardar score automáticamente cuando gana
+        saveScore(finalScoreRef.current, difficulty, currentPixelsDestroyed, timeMs, companyNameRef.current)
         setGameState("won")
       }
     }
@@ -315,17 +478,31 @@ export function PromptingIsAllYouNeed() {
       ctx.fillStyle = BACKGROUND_COLOR
       ctx.fillRect(0, 0, rect.width, rect.height)
 
-      // Dibujar líneas de borde del área de juego
-      ctx.strokeStyle = "#333333"
-      ctx.lineWidth = 2
-      ctx.strokeRect(gameAreaOffsetX, 0, gameAreaWidth, rect.height)
+      // Solo dibujar el juego si está jugando
+      if (gameState === "playing") {
+        // Dibujar líneas de borde del área de juego
+        ctx.strokeStyle = "#333333"
+        ctx.lineWidth = 2
+        ctx.strokeRect(gameAreaOffsetX, 0, gameAreaWidth, rect.height)
 
-      pixelsRef.current.forEach((pixel) => {
-        ctx.fillStyle = pixel.hit ? HIT_COLOR : COLOR
-        ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size)
-      })
+        pixelsRef.current.forEach((pixel) => {
+          ctx.fillStyle = pixel.hit ? HIT_COLOR : COLOR
+          ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size)
+        })
+        
+        // Actualizar score solo si el juego no ha terminado
+        if (!gameOverRef.current) {
+          const timeElapsed = Date.now() - gameStartTimeRef.current
+          const currentPixelsDestroyed = pixelsRef.current.filter(p => p.hit).length
+          updateScore(timeElapsed, currentPixelsDestroyed)
+        }
+        
+        // Mostrar score durante el juego
+        ctx.fillStyle = "#FFFFFF"
+        ctx.font = `${20 * scaleRef.current}px monospace`
+        ctx.textAlign = "left"
+        ctx.fillText(`Score: ${currentScoreRef.current}`, gameAreaOffsetX + 10, 30)
 
-      if (gameState !== "idle") {
         ctx.fillStyle = BALL_COLOR
         ctx.beginPath()
         ctx.arc(ballRef.current.x, ballRef.current.y, ballRef.current.radius, 0, Math.PI * 2)
@@ -336,25 +513,6 @@ export function PromptingIsAllYouNeed() {
         ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height)
       }
 
-      if (gameState === "lost") {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.8)"
-        ctx.fillRect(0, 0, rect.width, rect.height)
-        ctx.fillStyle = "#FFFFFF"
-        ctx.font = `${48 * scaleRef.current}px monospace`
-        ctx.textAlign = "center"
-        ctx.fillText("GAME OVER", rect.width / 2, rect.height / 2 - 30)
-        ctx.font = `${24 * scaleRef.current}px monospace`
-        ctx.fillText("Press R to start", rect.width / 2, rect.height / 2 + 30)
-      } else if (gameState === "won") {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.8)"
-        ctx.fillRect(0, 0, rect.width, rect.height)
-        ctx.fillStyle = "#FFFFFF"
-        ctx.font = `${48 * scaleRef.current}px monospace`
-        ctx.textAlign = "center"
-        ctx.fillText("YOU WIN!", rect.width / 2, rect.height / 2 - 30)
-        ctx.font = `${24 * scaleRef.current}px monospace`
-        ctx.fillText("Press R to start", rect.width / 2, rect.height / 2 + 30)
-      }
     }
 
     const gameLoop = () => {
@@ -379,7 +537,7 @@ export function PromptingIsAllYouNeed() {
       if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
         keysPressed.current[e.key] = true
       }
-      if (e.key === "Enter" && gameStateRef.current === "idle") {
+      if (e.key === "Enter" && gameStateRef.current === "idle" && companyNameRef.current.trim()) {
         e.preventDefault()
         if (handleStartGameRef.current) {
           handleStartGameRef.current()
@@ -407,6 +565,8 @@ export function PromptingIsAllYouNeed() {
   }, [])
 
   const handleStartGame = () => {
+    if (!companyName.trim()) return
+    
     const scale = scaleRef.current
     const container = containerRef.current
     if (!container) return
@@ -419,6 +579,14 @@ export function PromptingIsAllYouNeed() {
     const BALL_SPEED = speedMap[difficulty] * scale
 
     resetGame()
+    // Reset flags for new game
+    gameOverRef.current = false
+    scoreSavedRef.current = false
+    currentScoreRef.current = 0
+    finalScoreRef.current = 0
+    setScore(0)
+    setPixelsDestroyed(0)
+    gameStartTimeRef.current = Date.now()
 
     ballRef.current = {
       x: gameAreaOffsetX + gameAreaWidth / 2,
@@ -474,57 +642,268 @@ export function PromptingIsAllYouNeed() {
         aria-label="Hire Me: Interactive Breakout game - Use arrow keys to control the paddle"
       />
       {gameState === "idle" && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 bg-black">
-          <div className="flex flex-col items-center gap-3">
-            <p className="text-sm text-white/70 font-mono mb-2">Difficulty Level</p>
-            <div className="flex gap-3">
+        <div className="absolute inset-0 flex items-center justify-center bg-black">
+          <div className="border border-stone-800 bg-black/90 p-8 max-w-md w-full mx-4">
+            <div className="space-y-6">
+              {/* Difficulty */}
+              <div className="space-y-3">
+                <p className="text-xs text-white/60 font-mono uppercase tracking-wider">Difficulty</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setDifficulty("easy")}
+                    className={`flex-1 py-2 text-xs font-mono transition-all cursor-pointer border-2 ${
+                      difficulty === "easy"
+                        ? "bg-stone-700 text-white border-stone-500 fill-stone-700"
+                        : "bg-transparent text-white/60 border-stone-800 hover:border-stone-700 hover:text-white/80"
+                    }`}
+                    style={difficulty === "easy" ? { backgroundColor: '#404040' } : {}}
+                  >
+                    Easy
+                  </button>
+                  <button
+                    onClick={() => setDifficulty("medium")}
+                    className={`flex-1 py-2 text-xs font-mono transition-all cursor-pointer border-2 ${
+                      difficulty === "medium"
+                        ? "bg-stone-700 text-white border-stone-500 fill-stone-700"
+                        : "bg-transparent text-white/60 border-stone-800 hover:border-stone-700 hover:text-white/80"
+                    }`}
+                    style={difficulty === "medium" ? { backgroundColor: '#404040' } : {}}
+                  >
+                    Medium
+                  </button>
+                  <button
+                    onClick={() => setDifficulty("hard")}
+                    className={`flex-1 py-2 text-xs font-mono transition-all cursor-pointer border-2 ${
+                      difficulty === "hard"
+                        ? "bg-stone-700 text-white border-stone-500 fill-stone-700"
+                        : "bg-transparent text-white/60 border-stone-800 hover:border-stone-700 hover:text-white/80"
+                    }`}
+                    style={difficulty === "hard" ? { backgroundColor: '#404040' } : {}}
+                  >
+                    Hard
+                  </button>
+                </div>
+              </div>
+
+              {/* Company Name */}
+              <div className="space-y-2">
+                <p className="text-xs text-white/60 font-mono">Company name</p>
+                <input
+                  type="text"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Type to see where you rank"
+                  className="w-full px-3 py-2 bg-transparent border border-stone-700 text-white font-mono text-sm focus:outline-none focus:border-[#d97706] placeholder:text-white/30"
+                  maxLength={50}
+                />
+              </div>
+
+              {/* Start Button */}
               <button
-                onClick={() => setDifficulty("easy")}
-                className={`px-4 py-2 text-sm font-mono transition-all cursor-pointer border-2 ${
-                  difficulty === "easy"
-                    ? "bg-[#d97706] text-white border-stone-400"
-                    : "bg-white/10 text-white/70 border-transparent hover:bg-white/20 hover:border-white/30"
+                onClick={handleStartGame}
+                disabled={!companyName.trim()}
+                className={`w-full py-3 text-sm font-mono transition-all flex items-center justify-center gap-2 border ${
+                  !companyName.trim()
+                    ? "opacity-30 cursor-not-allowed border-stone-800 text-white/50"
+                    : "border-[#d97706] text-[#d97706] hover:bg-[#d97706] hover:text-white"
                 }`}
+                aria-label="Start game"
               >
-                Easy
+                <span>Press</span>
+                <CornerDownLeft className="h-4 w-4" />
+                <span>to start</span>
               </button>
+
+              {/* Ranking Toggle */}
               <button
-                onClick={() => setDifficulty("medium")}
-                className={`px-4 py-2 text-sm font-mono transition-all cursor-pointer border-2 ${
-                  difficulty === "medium"
-                    ? "bg-[#d97706] text-white border-stone-400"
-                    : "bg-white/10 text-white/70 border-transparent hover:bg-white/20 hover:border-white/30"
-                }`}
+                onClick={() => setShowRanking(!showRanking)}
+                className="w-full text-xs text-white/50 hover:text-white/80 font-mono transition-colors py-2"
               >
-                Medium
-              </button>
-              <button
-                onClick={() => setDifficulty("hard")}
-                className={`px-4 py-2 text-sm font-mono transition-all cursor-pointer border-2 ${
-                  difficulty === "hard"
-                    ? "bg-[#d97706] text-white border-stone-400"
-                    : "bg-white/10 text-white/70 border-transparent hover:bg-white/20 hover:border-white/30"
-                }`}
-              >
-                Hard
+                {showRanking ? "Hide" : "Show"} ranking
               </button>
             </div>
           </div>
-          <button
-            onClick={handleStartGame}
-            className="text-white hover:text-stone-300 transition-colors text-center font-mono cursor-pointer border-none bg-transparent flex items-center gap-2"
-            aria-label="Start game"
-          >
-            <span className="text-2xl">Press</span>
-            <CornerDownLeft className="h-6 w-6" />
-            <span className="text-2xl">to start</span>
-          </button>
-          <p className="text-sm opacity-70 font-mono">use your keyboard to play &lt;&gt;</p>
+          
+          {showRanking && (
+            <div ref={rankingRef} className="absolute top-8 right-8 border border-stone-800 bg-black p-6 max-w-lg w-full max-h-[500px] overflow-y-auto z-50">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-white font-mono text-xs uppercase tracking-wider">Rankings</h3>
+                <button
+                  onClick={async () => {
+                    console.log('Manual ranking reload...')
+                    const response = await fetch('/api/ranking')
+                    if (response.ok) {
+                      const data = await response.json()
+                      console.log('Manual reload data:', data)
+                      setRanking(data)
+                    }
+                  }}
+                  className="text-white/50 hover:text-white/80 font-mono text-[10px] px-2 py-1 border border-stone-700 hover:border-stone-500 transition-colors"
+                >
+                  Reload
+                </button>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                {/* Easy Ranking */}
+                <div>
+                  <h4 className="text-white/80 font-mono text-[10px] mb-3 uppercase tracking-wider border-b border-stone-800 pb-1">Easy</h4>
+                  <div className="space-y-2">
+                    {ranking.easy.length > 0 ? (
+                      ranking.easy.slice(0, 10).map((entry, index) => {
+                        const getTrophyColor = () => {
+                          if (index === 0) return "#FFD700" // Oro
+                          if (index === 1) return "#C0C0C0" // Plata
+                          if (index === 2) return "#CD7F32" // Bronce
+                          return null
+                        }
+                        const trophyColor = getTrophyColor()
+                        return (
+                          <div key={index} className="text-white/60 font-mono text-[10px]">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1">
+                                {trophyColor ? (
+                                  <Trophy className="h-3 w-3" style={{ color: trophyColor }} fill={trophyColor} />
+                                ) : (
+                                  <span>#{index + 1}</span>
+                                )}
+                              </div>
+                              <span>{entry.score.toLocaleString()}</span>
+                            </div>
+                            <div className="text-white/40 text-[9px] truncate mt-0.5 pl-4">
+                              {entry.companyName}
+                            </div>
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <div className="text-white/30 font-mono text-[10px] text-center py-4">—</div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Medium Ranking */}
+                <div>
+                  <h4 className="text-white/80 font-mono text-[10px] mb-3 uppercase tracking-wider border-b border-stone-800 pb-1">Medium</h4>
+                  <div className="space-y-2">
+                    {ranking.medium.length > 0 ? (
+                      ranking.medium.slice(0, 10).map((entry, index) => {
+                        const getTrophyColor = () => {
+                          if (index === 0) return "#FFD700" // Oro
+                          if (index === 1) return "#C0C0C0" // Plata
+                          if (index === 2) return "#CD7F32" // Bronce
+                          return null
+                        }
+                        const trophyColor = getTrophyColor()
+                        return (
+                          <div key={index} className="text-white/60 font-mono text-[10px]">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1">
+                                {trophyColor ? (
+                                  <Trophy className="h-3 w-3" style={{ color: trophyColor }} fill={trophyColor} />
+                                ) : (
+                                  <span>#{index + 1}</span>
+                                )}
+                              </div>
+                              <span>{entry.score.toLocaleString()}</span>
+                            </div>
+                            <div className="text-white/40 text-[9px] truncate mt-0.5 pl-4">
+                              {entry.companyName}
+                            </div>
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <div className="text-white/30 font-mono text-[10px] text-center py-4">—</div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Hard Ranking */}
+                <div>
+                  <h4 className="text-white/80 font-mono text-[10px] mb-3 uppercase tracking-wider border-b border-stone-800 pb-1">Hard</h4>
+                  <div className="space-y-2">
+                    {ranking.hard.length > 0 ? (
+                      ranking.hard.slice(0, 10).map((entry, index) => {
+                        const getTrophyColor = () => {
+                          if (index === 0) return "#FFD700" // Oro
+                          if (index === 1) return "#C0C0C0" // Plata
+                          if (index === 2) return "#CD7F32" // Bronce
+                          return null
+                        }
+                        const trophyColor = getTrophyColor()
+                        return (
+                          <div key={index} className="text-white/60 font-mono text-[10px]">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1">
+                                {trophyColor ? (
+                                  <Trophy className="h-3 w-3" style={{ color: trophyColor }} fill={trophyColor} />
+                                ) : (
+                                  <span>#{index + 1}</span>
+                                )}
+                              </div>
+                              <span>{entry.score.toLocaleString()}</span>
+                            </div>
+                            <div className="text-white/40 text-[9px] truncate mt-0.5 pl-4">
+                              {entry.companyName}
+                            </div>
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <div className="text-white/30 font-mono text-[10px] text-center py-4">—</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
       {gameState === "playing" && (
         <div className="absolute top-8 left-1/2 transform -translate-x-1/2 text-white text-center font-mono">
           <p className="text-sm opacity-70">Use ← → arrow keys to control the paddle</p>
+        </div>
+      )}
+      {gameState === "lost" && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black">
+          <div className="border border-stone-800 bg-black/90 p-8 max-w-md w-full mx-4">
+            <div className="space-y-6">
+              <div className="text-center space-y-4">
+                <h2 className="text-2xl text-white font-mono">GAME OVER</h2>
+                <p className="text-lg text-white/80 font-mono">Score: {score.toLocaleString()}</p>
+              </div>
+              
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full py-3 text-sm font-mono transition-all flex items-center justify-center gap-2 border border-[#d97706] text-[#d97706] hover:bg-[#d97706] hover:text-white"
+              >
+                <span>Press</span>
+                <span className="font-mono">R</span>
+                <span>to play again</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {gameState === "won" && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black">
+          <div className="border border-stone-800 bg-black/90 p-8 max-w-md w-full mx-4">
+            <div className="space-y-6">
+              <div className="text-center space-y-4">
+                <h2 className="text-2xl text-white font-mono">YOU WIN!</h2>
+                <p className="text-lg text-white/80 font-mono">Score: {score.toLocaleString()}</p>
+              </div>
+              
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full py-3 text-sm font-mono transition-all flex items-center justify-center gap-2 border border-[#d97706] text-[#d97706] hover:bg-[#d97706] hover:text-white"
+              >
+                <span>Press</span>
+                <span className="font-mono">R</span>
+                <span>to play again</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

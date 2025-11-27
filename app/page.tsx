@@ -840,6 +840,16 @@ export default function Portfolio() {
           className="relative w-full overflow-hidden"
           style={{ height: '75vh' }}
         >
+          <div className="absolute top-0 left-0 right-0 z-10 pt-24 pb-8 px-8 bg-transparent">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex items-center space-x-4">
+                <div className="w-8 h-px bg-stone-400 dark:bg-stone-600"></div>
+                <h2 className="text-sm font-light tracking-wider uppercase text-stone-600 dark:text-stone-400">
+                  Is your company the best? Prove it.
+                </h2>
+              </div>
+            </div>
+          </div>
           <PromptingIsAllYouNeed />
         </section>
 
