@@ -248,9 +248,11 @@ export default function Portfolio() {
       heroTitle:
         "Hi, I'm Abi — I wrote \"Hello World\" in HTML at 12, and my entire personality quietly formed around it.",
       heroDescription1:
-        "I craft interfaces that feel intuitive, products that solve real problems, and experiences that connect people to technology in meaningful ways.",
+        "Full-Stack Developer · UX/UI Designer · Business Student",
       heroDescription2:
-        "I love creating, innovating, and turning concepts into products that have real impact. My passion is building experiences that are thoughtful, human, and genuinely useful — and I'm driven by the dream of creating things that make life better for others.",
+        "I work at the intersection of design, technology, and strategy to create useful, clear, and human solutions.",
+      heroDescription3:
+        "My motivation is always the same: building products with real impact, understanding people, the business, and the why behind every decision.",
       contactTitle: "I'm always building something new.",
       contactDescription:
         "Whether you're looking to collaborate on a project, discuss an opportunity, or simply want to connect — I'd love to hear from you.",
@@ -317,11 +319,13 @@ export default function Portfolio() {
       thoughtsInsights: "Pensamientos e Ideas",
       letsConnect: "Conectemos",
       heroTitle:
-        "Hola, soy Abi — una desarrolladora, diseñadora UX/UI y estudiante de negocios creando experiencias digitales que combinan diseño, tecnología y estrategia.",
+        "Hola, soy Abi — escribí \"Hello World\" en HTML a los 12, y toda mi personalidad se formó silenciosamente alrededor de eso.",
       heroDescription1:
-        "Creo interfaces que se sienten intuitivas, productos que resuelven problemas reales y experiencias que conectan a las personas con la tecnología de manera significativa.",
+        "Full-Stack Developer · UX/UI Designer · Business Student",
       heroDescription2:
-        "Me encanta crear, innovar y convertir conceptos en productos que tienen un impacto real. Mi pasión es construir experiencias reflexivas, humanas y genuinamente útiles — y me impulsa el sueño de crear cosas que mejoren la vida de los demás.",
+        "Trabajo en la intersección entre diseño, tecnología y estrategia para crear soluciones útiles, claras y humanas.",
+      heroDescription3:
+        "Mi motivación siempre es la misma: construir productos con impacto real, entendiendo a las personas, el negocio y el porqué detrás de cada decisión.",
       contactTitle: "Siempre estoy construyendo algo nuevo.",
       contactDescription:
         "Ya sea que busques colaborar en un proyecto, discutir una oportunidad, o simplemente quieras conectar — me encantaría saber de ti.",
@@ -602,8 +606,9 @@ export default function Portfolio() {
                 </div>
 
                 <div className="space-y-4 text-stone-600 dark:text-stone-400 font-light leading-relaxed">
-                  <p>{currentTranslations.heroDescription1}</p>
+                  <p className="text-stone-900 dark:text-stone-100 font-medium">{currentTranslations.heroDescription1}</p>
                   <p>{currentTranslations.heroDescription2}</p>
+                  <p>{currentTranslations.heroDescription3}</p>
                 </div>
 
                 <div className="flex space-x-6 pt-4">
