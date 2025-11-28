@@ -9,6 +9,12 @@ import { Button } from "@/components/ui/button"
 export default function AbaAiProject() {
   const [language, setLanguage] = useState<"en" | "es">("en")
   const [horizontalTitle, setHorizontalTitle] = useState("Our Mission")
+  const [hoveredTechCard, setHoveredTechCard] = useState<number | null>(null)
+  const horizontalSectionRef = useRef<HTMLElement>(null)
+  const horizontalTrackRef = useRef<HTMLDivElement>(null)
+  const flowLineRef = useRef<HTMLDivElement>(null)
+  const flowNodeRef = useRef<HTMLDivElement>(null)
+  const flowContainerRef = useRef<HTMLDivElement>(null)
 
   // Initialize horizontal title based on language
   useEffect(() => {
@@ -18,12 +24,6 @@ export default function AbaAiProject() {
     }
     setHorizontalTitle(translations[language].mission)
   }, [language])
-  const [hoveredTechCard, setHoveredTechCard] = useState<number | null>(null)
-  const horizontalSectionRef = useRef<HTMLElement>(null)
-  const horizontalTrackRef = useRef<HTMLDivElement>(null)
-  const flowLineRef = useRef<HTMLDivElement>(null)
-  const flowNodeRef = useRef<HTMLDivElement>(null)
-  const flowContainerRef = useRef<HTMLDivElement>(null)
 
   // Horizontal scroll effect for "THE PROBLEM & THE OPPORTUNITY" section
   useEffect(() => {
@@ -400,11 +400,11 @@ export default function AbaAiProject() {
             {/* Center: ABA IA PROJECT */}
             <div className="text-sm font-light tracking-wider absolute left-1/2 transform -translate-x-1/2">
               {translations[language].projectTitle}
-            </div>
+                </div>
 
             {/* Right: Language Toggle */}
             <div className="flex items-center">
-              <Button
+            <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleLanguage}
@@ -412,10 +412,10 @@ export default function AbaAiProject() {
               >
                 <Globe className="h-3 w-3" />
                 <span className="text-xs font-light">{language.toUpperCase()}</span>
-              </Button>
-            </div>
+            </Button>
           </div>
         </div>
+              </div>
         <div className="h-px bg-white/20 transition-all duration-300"></div>
       </header>
 
@@ -426,50 +426,16 @@ export default function AbaAiProject() {
           <div className="max-w-7xl mx-auto text-center w-full px-8 md:px-16" style={{ paddingTop: 'calc(128px + 50px)' }}>
             {/* Content */}
             <div className="max-w-4xl mx-auto">
-            <div className="space-y-8">
+              <div className="space-y-8">
                 <h2 className="text-4xl md:text-5xl font-thin">ABA IA</h2>
                 <p className="text-xl font-light leading-relaxed">
                   {t.heroDescription}
                 </p>
-              </div>
-                </div>
-              </div>
-          {/* Image - aligned exactly with vertical lines */}
-          <div 
-            className="w-full"
-            style={{
-              marginTop: 'calc(24px - 200px)',
-              paddingLeft: 'max(27px, calc(50vw - 640px - 5px))',
-              paddingRight: 'max(27px, calc(50vw - 640px - 5px))'
-            }}
-          >
-            <div className="overflow-hidden w-full select-none" style={{ userSelect: 'none' }}>
-                <Image
-                src="/images/MANO2.png"
-                alt="ABA IA"
-                width={1300}
-                height={820}
-                className="w-full h-auto object-cover grayscale opacity-40 pointer-events-none select-none"
-                style={{ 
-                  transform: 'rotate(-10deg) scale(1.00)',
-                  userSelect: 'none',
-                  pointerEvents: 'none',
-                  WebkitUserSelect: 'none'
-                } as React.CSSProperties}
-                draggable={false}
-                onContextMenu={(e) => e.preventDefault()}
-                onDragStart={(e) => e.preventDefault()}
-                  priority
-                />
-              </div>
+                <div className="pt-8 space-y-2">
+                  <p className="text-sm font-light text-white/60">{t.fullStackSaaS}</p>
+                  <p className="text-sm font-light text-white/60">{t.builtBy}</p>
+                  <p className="text-sm font-light text-white/60">2025</p>
             </div>
-          {/* Footer info after image */}
-          <div className="max-w-7xl mx-auto text-center w-full px-8 md:px-16" style={{ marginTop: 'calc(24px - 80px)' }}>
-            <div className="max-w-4xl mx-auto">
-              <div className="space-y-2">
-                <p className="text-sm font-light text-white/60">{t.fullStackSaaS}</p>
-                <p className="text-sm font-light text-white/60">{t.builtBy}</p>
-                <p className="text-sm font-light text-white/60">2025</p>
                 </div>
               </div>
             </div>
@@ -1001,20 +967,50 @@ export default function AbaAiProject() {
         <div className="w-full h-px bg-white/20 my-32"></div>
 
         {/* BLOCK 11 — Legal Footer */}
-        <footer className="px-8 md:px-16 py-24 max-w-7xl mx-auto">
-          <div className="space-y-4 text-lg font-light mb-12">
-            <p>Abril Marangoni</p>
-            <p>Buenos Aires, Argentina</p>
-                    </div>
-          <div className="space-y-2 text-lg font-light">
-            <a href="#" className="block hover:opacity-60 transition-opacity duration-300">
-              Privacy
-            </a>
-            <a href="#" className="block hover:opacity-60 transition-opacity duration-300">
-              Cookies
-            </a>
-        </div>
-      </footer>
+        <footer className="py-24">
+          {/* Image - positioned exactly between vertical lines */}
+          <div 
+            className="mb-16 overflow-hidden mx-auto"
+            style={{
+              marginLeft: 'max(27px, calc(50vw - 640px - 5px))',
+              marginRight: 'max(27px, calc(50vw - 640px - 5px))',
+              width: 'calc(100% - 2 * max(27px, calc(50vw - 640px - 5px)))'
+            }}
+          >
+            <Image
+              src="/images/MANO2.png"
+              alt="ABA IA"
+              width={1600}
+              height={1000}
+              className="w-full h-auto object-cover grayscale opacity-40 pointer-events-none select-none"
+              style={{ 
+                transform: 'rotate(-10deg) scale(1.1)',
+                transformOrigin: 'center center',
+                userSelect: 'none',
+                pointerEvents: 'none',
+                WebkitUserSelect: 'none'
+              } as React.CSSProperties}
+              draggable={false}
+              onContextMenu={(e) => e.preventDefault()}
+              onDragStart={(e) => e.preventDefault()}
+            />
+          </div>
+
+          <div className="px-8 md:px-16 max-w-7xl mx-auto">
+            <div className="space-y-4 text-lg font-light mb-12">
+              <p>Abril Marangoni</p>
+              <p>Buenos Aires, Argentina</p>
+            </div>
+            <div className="space-y-2 text-lg font-light">
+              <a href="#" className="block hover:opacity-60 transition-opacity duration-300">
+                {t.privacy}
+              </a>
+              <a href="#" className="block hover:opacity-60 transition-opacity duration-300">
+                {t.cookies}
+              </a>
+            </div>
+          </div>
+        </footer>
       </main>
     </div>
   )
