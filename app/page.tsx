@@ -31,7 +31,11 @@ export default function Portfolio() {
 
     setDarkMode(isDark)
     setLanguage(savedLanguage)
-    document.documentElement.classList.toggle("dark", isDark)
+    if (isDark) {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
 
     const handleScroll = () => setScrollY(window.scrollY)
     window.addEventListener("scroll", handleScroll)
@@ -220,7 +224,11 @@ export default function Portfolio() {
     const newDarkMode = !darkMode
     setDarkMode(newDarkMode)
     localStorage.setItem("darkMode", newDarkMode.toString())
-    document.documentElement.classList.toggle("dark", newDarkMode)
+    if (newDarkMode) {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
   }
 
   const toggleLanguage = () => {

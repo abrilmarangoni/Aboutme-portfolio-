@@ -272,43 +272,55 @@ export default function AvanceProject() {
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
                 {/* Screen 1 */}
                 <div className="space-y-6">
-                  <div className="border border-stone-200 dark:border-stone-800 rounded-sm overflow-hidden aspect-[9/19] bg-stone-50 dark:bg-stone-900 flex items-center justify-center">
-                    <div className="text-sm font-light text-stone-400">
-                      {language === "en" ? "Screen 1 Mockup" : "Mockup Pantalla 1"}
-                    </div>
+                  <div className="rounded-sm overflow-hidden aspect-[9/19] bg-transparent">
+                    <Image
+                      src="/images/mockupportfolio2.png"
+                      alt="Sign In Page"
+                      width={400}
+                      height={844}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <p className="text-sm font-light tracking-wide text-stone-600 dark:text-stone-400 text-center">
-                    {language === "en" 
-                      ? "Daily Readiness Metrics & Mood Tracker"
-                      : "Métricas de Preparación Diaria y Rastreador de Humor"}
+                    {language === "en"
+                      ? "Sign In & Authentication Flow"
+                      : "Flujo de Inicio de Sesión y Autenticación"}
                   </p>
                 </div>
 
                 {/* Screen 2 */}
                 <div className="space-y-6">
-                  <div className="border border-stone-200 dark:border-stone-800 rounded-sm overflow-hidden aspect-[9/19] bg-stone-50 dark:bg-stone-900 flex items-center justify-center">
-                    <div className="text-sm font-light text-stone-400">
-                      {language === "en" ? "Screen 2 Mockup" : "Mockup Pantalla 2"}
-                    </div>
-                  </div>
-                  <p className="text-sm font-light tracking-wide text-stone-600 dark:text-stone-400 text-center">
-                    {language === "en"
-                      ? "Smart AI Coach Response Modal"
-                      : "Modal de Respuesta del Coach AI Inteligente"}
-                  </p>
-                </div>
-
-                {/* Screen 3 */}
-                <div className="space-y-6">
-                  <div className="border border-stone-200 dark:border-stone-800 rounded-sm overflow-hidden aspect-[9/19] bg-stone-50 dark:bg-stone-900 flex items-center justify-center">
-                    <div className="text-sm font-light text-stone-400">
-                      {language === "en" ? "Screen 3 Mockup" : "Mockup Pantalla 3"}
-                    </div>
+                  <div className="rounded-sm overflow-hidden aspect-[9/19] bg-transparent">
+                    <Image
+                      src="/images/mockupportfolio3.png"
+                      alt="Personalized Workout Generator"
+                      width={400}
+                      height={844}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <p className="text-sm font-light tracking-wide text-stone-600 dark:text-stone-400 text-center">
                     {language === "en"
                       ? "Personalized Workout Generator"
                       : "Generador de Entrenamientos Personalizados"}
+                  </p>
+                </div>
+
+                {/* Screen 3 */}
+                <div className="space-y-6">
+                  <div className="rounded-sm overflow-hidden aspect-[9/19] bg-transparent">
+                    <Image
+                      src="/images/mockupportfolio1.png"
+                      alt="Daily Readiness Metrics & Mood Tracker"
+                      width={400}
+                      height={844}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className="text-sm font-light tracking-wide text-stone-600 dark:text-stone-400 text-center">
+                    {language === "en" 
+                      ? "Daily Readiness Metrics & Mood Tracker"
+                      : "Métricas de Preparación Diaria y Rastreador de Humor"}
                   </p>
                 </div>
 

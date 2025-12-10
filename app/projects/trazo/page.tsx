@@ -11,13 +11,23 @@ export default function TrazoProject() {
   const [language, setLanguage] = useState<"en" | "es">("en")
 
   useEffect(() => {
+    // Force dark mode for this page
+    document.documentElement.classList.add("dark")
+    
     const handleScroll = () => setScrollY(window.scrollY)
     window.addEventListener("scroll", handleScroll)
     
     const savedLanguage = (localStorage.getItem("language") as "en" | "es") || "en"
     setLanguage(savedLanguage)
     
-    return () => window.removeEventListener("scroll", handleScroll)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      // Restore previous dark mode state when leaving
+      const wasDark = localStorage.getItem("darkMode") === "true"
+      if (!wasDark) {
+        document.documentElement.classList.remove("dark")
+      }
+    }
   }, [])
 
   const toggleLanguage = () => {
