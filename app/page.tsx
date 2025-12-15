@@ -12,6 +12,73 @@ import { SurveyModal } from "@/components/survey-modal"
 
 type ViewState = "normal" | "glitching" | "broken"
 
+// Project Video Loop Component - Shows video directly in loop
+const ProjectVideoLoop = ({ videoSrc }: { videoSrc: string }) => {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [shouldLoad, setShouldLoad] = useState(false)
+
+  useEffect(() => {
+    // Use Intersection Observer to load video only when visible
+    const video = videoRef.current
+    if (!video) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setShouldLoad(true)
+            observer.disconnect()
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (video.parentElement) {
+      observer.observe(video.parentElement)
+    }
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!shouldLoad) return
+    const video = videoRef.current
+    if (!video) return
+
+    const playVideo = async () => {
+      try {
+        await video.play()
+      } catch (error) {
+        // Silently handle play errors
+      }
+    }
+
+    video.addEventListener('loadeddata', playVideo, { once: true })
+    playVideo()
+
+    return () => {
+      video.pause()
+    }
+  }, [shouldLoad, videoSrc])
+
+  return (
+    <video
+      ref={videoRef}
+      src={shouldLoad ? videoSrc : undefined}
+      className="absolute inset-0 w-full h-full object-cover"
+      loop
+      muted
+      playsInline
+      autoPlay={shouldLoad}
+      preload="none"
+      loading="lazy"
+    />
+  )
+}
+
 export default function Portfolio() {
   const [darkMode, setDarkMode] = useState(false)
   const [scrollY, setScrollY] = useState(0)
@@ -276,10 +343,10 @@ export default function Portfolio() {
             "An intelligent AI assistant that connects through Meta platforms, automatically responding to WhatsApp, Instagram, and Facebook messages. Built the complete solution including backend, frontend, and UX/UI design.",
         },
         fintech: {
-          title: "Fintech Checkout System",
-          subtitle: "Startup Project",
+          title: "SAND",
+          subtitle: "Minimal Furniture E-commerce Platform",
           description:
-            "A real product in development using stablecoins, with smart checkout, full website, and mobile wallet dashboard.",
+            "Frontend Development & UX/UI Design for a minimal luxury furniture e-commerce platform. I handled the full visual system, branding, and frontend implementation, building a CRAVED-inspired experience focused on clarity, restraint, and premium interaction.",
         },
         avance: {
           title: "Avance AI Coach",
@@ -349,10 +416,10 @@ export default function Portfolio() {
             "Un asistente inteligente de IA que se conecta a través de plataformas Meta, respondiendo automáticamente mensajes de WhatsApp, Instagram y Facebook. Construí la solución completa incluyendo backend, frontend y diseño UX/UI.",
         },
         fintech: {
-          title: "Sistema de Pago Fintech",
-          subtitle: "Proyecto Startup",
+          title: "SAND",
+          subtitle: "Minimal Furniture E-commerce Platform",
           description:
-            "Un producto real en desarrollo usando stablecoins, con checkout inteligente, sitio web completo y dashboard de billetera móvil.",
+            "Desarrollo Frontend & Diseño UX/UI para una plataforma de e-commerce de muebles minimalistas de lujo. Me encargué del sistema visual completo, branding e implementación frontend, construyendo una experiencia inspirada en CRAVED enfocada en claridad, moderación e interacción premium.",
         },
         zalesMachine: {
           title: "Basement Frontend e-commerce",
@@ -408,7 +475,7 @@ export default function Portfolio() {
       title: currentTranslations.projectData.fintech.title,
       subtitle: currentTranslations.projectData.fintech.subtitle,
       description: currentTranslations.projectData.fintech.description,
-      image: "/images/chatgpt-20image-2016-20nov-202025-2c-2018-10-57.png",
+      image: "/images/portfoliosand1.jpeg",
       year: "2024",
       href: "/projects/fintech",
     },
@@ -489,6 +556,11 @@ export default function Portfolio() {
         className="h-8 w-auto brightness-0 invert"
       />
     </div>
+  )
+
+  // SAND Title Component
+  const SandTitle = () => (
+    <span className="text-2xl lg:text-3xl font-serif tracking-tight">SAND</span>
   )
 
   return (
@@ -723,13 +795,25 @@ export default function Portfolio() {
                             {/* Project Image - Always on the left */}
                             <div className="relative flex-shrink-0 w-1/2">
                               <div className={`relative aspect-[16/9] overflow-hidden ${project.title === "Basement Frontend e-commerce" ? "bg-black" : ""}`}>
-                                <Image
-                                  src={project.image || "/placeholder.svg"}
-                                  alt={project.title}
-                                  fill
-                                  className={`${project.title === "Basement Frontend e-commerce" ? "object-contain" : "object-left object-cover"} group-hover:scale-105 transition-transform duration-700`}
-                                />
-                                <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/10 transition-colors duration-500"></div>
+                                {project.title === "SAND" ? (
+                                  <ProjectVideoLoop videoSrc="/images/hooversand.mp4" />
+                                ) : project.title === "Basement Frontend e-commerce" ? (
+                                  <ProjectVideoLoop videoSrc="/images/hooverbasement.mp4" />
+                                ) : project.title === "ABA AI" ? (
+                                  <ProjectVideoLoop videoSrc="/images/hooverhands.mp4" />
+                                ) : project.title === "Avance AI Coach" ? (
+                                  <ProjectVideoLoop videoSrc="/images/hooveravance.mp4" />
+                                ) : (
+                                  <>
+                                    <Image
+                                      src={project.image || "/placeholder.svg"}
+                                      alt={project.title}
+                                      fill
+                                      className={`${project.title === "Basement Frontend e-commerce" ? "object-contain" : "object-left object-cover"} group-hover:scale-105 transition-transform duration-700`}
+                                    />
+                                    <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/10 transition-colors duration-500"></div>
+                                  </>
+                                )}
                                 <div className="absolute inset-0 border border-stone-200 dark:border-stone-800 pointer-events-none"></div>
                               </div>
                             </div>
@@ -749,6 +833,8 @@ export default function Portfolio() {
                                     <AvanceLogo />
                                   ) : project.title === "TRAZO Architecture Studio" || project.title === "Estudio de Arquitectura TRAZO" ? (
                                     <TrazoLogo />
+                                  ) : project.title === "SAND" ? (
+                                    <SandTitle />
                                   ) : (
                                     project.title
                                   )}
