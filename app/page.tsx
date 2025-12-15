@@ -283,9 +283,9 @@ export default function Portfolio() {
         },
         avance: {
           title: "Avance AI Coach",
-          subtitle: "Personal Project",
+          subtitle: "UX/UI AI Fitness App",
           description:
-            "An AI-powered personal coaching app that combines fitness tracking, personalized guidance, and motivational support to help users achieve their wellness goals.",
+            "Capstone project for the University of Texas at Austin, graded A+. An AI-powered personal coaching app combining fitness tracking, personalized guidance, and motivational support to help users achieve their wellness goals.",
         },
         zalesMachine: {
           title: "Basement Frontend e-commerce",
@@ -295,9 +295,9 @@ export default function Portfolio() {
         },
         trazo: {
           title: "TRAZO Architecture Studio",
-          subtitle: "Website Design",
+          subtitle: "Architecture Studio Website",
           description:
-            "Complete website design for a Mar del Plata-based architectural studio, showcasing their portfolio with a minimalist aesthetic and refined visual identity.",
+            "Complete UX/UI design and full frontend development for a Mar del Plata-based architectural studio, showcasing their portfolio with a minimalist aesthetic and refined visual identity.",
         },
         portfolio: {
           title: "This Portfolio",
@@ -362,15 +362,15 @@ export default function Portfolio() {
         },
         avance: {
           title: "Avance AI Coach",
-          subtitle: "Proyecto Personal",
+          subtitle: "UX/UI AI Fitness App",
           description:
-            "Una app de coaching personal impulsada por IA que combina seguimiento de fitness, orientación personalizada y apoyo motivacional para ayudar a los usuarios a alcanzar sus objetivos de bienestar.",
+            "Proyecto Capstone para la Universidad de Texas en Austin, calificado con A+. Una app de coaching personal impulsada por IA que combina seguimiento de fitness, orientación personalizada y apoyo motivacional para ayudar a los usuarios a alcanzar sus objetivos de bienestar.",
         },
         trazo: {
           title: "Estudio de Arquitectura TRAZO",
-          subtitle: "Diseño Web",
+          subtitle: "Architecture Studio Website",
           description:
-            "Diseño web completo para un estudio de arquitectura marplatense, mostrando su portafolio con una estética minimalista e identidad visual refinada.",
+            "Diseño UX/UI completo y desarrollo frontend completo para un estudio de arquitectura marplatense, mostrando su portafolio con una estética minimalista e identidad visual refinada.",
         },
         portfolio: {
           title: "Este Portfolio",
@@ -476,6 +476,19 @@ export default function Portfolio() {
       <path d="M265.268 79.9999C259.77 79.9999 254.94 78.8034 250.778 76.4138C246.617 74.0242 243.396 70.6965 241.119 66.4271C238.841 62.1612 237.699 57.2333 237.699 51.6399C237.699 46.0465 238.838 41.0301 241.119 36.7997C243.4 32.5692 246.561 29.2592 250.615 26.8696C254.665 24.48 259.407 23.2834 264.833 23.2834C269.753 23.2834 274.204 24.2605 278.184 26.2076C282.161 28.1582 285.493 31.4116 288.171 35.9713L277.86 42.0391C276.411 39.3203 274.639 37.313 272.543 36.0244C270.443 34.7393 268.092 34.0915 265.487 34.0915C262.521 34.0915 259.916 34.8101 257.673 36.2439C255.431 37.6776 253.693 39.7026 252.464 42.3117C251.231 44.9243 250.618 47.9936 250.618 51.5266C250.618 55.0597 251.252 58.2387 252.52 60.8514C253.784 63.464 255.521 65.4854 257.729 66.9191C259.937 68.3529 262.451 69.0716 265.272 69.0716C268.312 69.0716 270.895 68.3352 273.034 66.866C275.168 65.3969 276.888 63.4109 278.191 60.908L288.502 66.0943C286.113 70.5832 283.038 74.0207 279.277 76.4103C275.513 78.7998 270.847 79.9964 265.275 79.9964L265.268 79.9999Z" fill="currentColor"/>
       <path d="M317.474 79.8903C311.683 79.8903 306.711 78.6938 302.549 76.3042C298.388 73.9146 295.205 70.5869 292.998 66.3174C290.79 62.0516 289.686 57.0883 289.686 51.4206C289.686 45.7528 290.752 40.9205 292.886 36.6901C295.021 32.4596 298.078 29.185 302.058 26.8697C306.039 24.5545 310.705 23.3933 316.061 23.3933C321.416 23.3933 326.135 24.5332 330.007 26.8131C333.876 29.0929 336.846 32.2932 338.908 36.4139C340.969 40.5346 342 45.3138 342 50.7585C342 51.4949 341.962 52.2879 341.892 53.1304C341.819 53.9765 341.746 54.7306 341.676 55.3926H295.982V45.7917H335.492L329.631 48.7725C329.342 44.0642 328.019 40.386 325.668 37.7379C323.318 35.0899 320.079 33.7659 315.953 33.7659C312.913 33.7659 310.343 34.52 308.246 36.0281C306.147 37.5362 304.573 39.5965 303.525 42.2056C302.476 44.8182 301.951 47.8521 301.951 51.3073C301.951 56.9715 303.361 61.3683 306.185 64.4943C309.006 67.6202 312.77 69.185 317.474 69.185C320.441 69.185 323.171 68.5406 325.668 67.252C328.165 65.967 330.209 64.2181 331.8 62.0126L341.136 68.1902C338.601 71.794 335.345 74.6438 331.369 76.7431C327.388 78.8389 322.757 79.8868 317.474 79.8868V79.8903Z" fill="currentColor"/>
     </svg>
+  )
+
+  // Trazo Logo Component
+  const TrazoLogo = () => (
+    <div className="relative" style={{ top: '5px' }}>
+      <Image
+        src="/images/logo3.png"
+        alt="TRAZO Architecture Studio"
+        width={200}
+        height={60}
+        className="h-8 w-auto brightness-0 invert"
+      />
+    </div>
   )
 
   return (
@@ -734,6 +747,8 @@ export default function Portfolio() {
                                     <BasementLogo />
                                   ) : project.title === "Avance AI Coach" ? (
                                     <AvanceLogo />
+                                  ) : project.title === "TRAZO Architecture Studio" || project.title === "Estudio de Arquitectura TRAZO" ? (
+                                    <TrazoLogo />
                                   ) : (
                                     project.title
                                   )}
